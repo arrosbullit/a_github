@@ -92,3 +92,57 @@ for (var i = 0; i < myAssets.current.length; i++)
 
 myAssetsPercent = new Assets(notCurrentPercent, currentPercent);
 
+//Aquesta funcio es crida quan es fa click sobre el quadrat
+
+function myFunction()
+{
+	var canvasHeight = 500;
+	//Create some text
+	var para=document.createElement("p");
+	var node=document.createTextNode("This is new.");
+	para.appendChild(node);
+	//Locate the div
+	var divElement = document.getElementById("bsDivId");
+	//Add text
+	divElement.appendChild(para);
+	//Create the canvas
+	var canvas = document.createElement("canvas");
+	canvas.id = "myCanvas";
+	canvas.width = "400";
+	canvas.height = canvasHeight;
+	canvas.style = "border:1px solid #c3c3c3;";
+	//Add the canvas
+	divElement.appendChild(canvas);
+	
+
+	console.log('myFunction()')
+	
+	var c=document.getElementById("myCanvas");
+	var ctx=c.getContext("2d");
+	ctx.restore();
+	ctx.fillStyle="080";
+	ctx.fillRect(0,0,150,canvasHeight);	
+	
+	//Fes un rectangle  amb seccions de colors
+	var lastY = 0;
+	for(var i = 0; i < myAssetsPercent.notCurrent.length; i++){
+		//Generate a random color
+		var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+		ctx.fillStyle = randomColor;
+		var sectionHeight = (myAssetsPercent.notCurrent[i].value / 100) * canvasHeight;
+		ctx.fillRect(0, lastY, 150, sectionHeight);	
+		lastY = lastY + sectionHeight;
+	}
+
+	for(var i = 0; i < myAssetsPercent.current.length; i++){
+		//Generate a random color
+		var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+		ctx.fillStyle = randomColor;
+		var sectionHeight = (myAssetsPercent.current[i].value / 100) * canvasHeight;
+		ctx.fillRect(0, lastY, 150, sectionHeight);	
+		lastY = lastY + sectionHeight;
+	}
+	
+}
+
+
