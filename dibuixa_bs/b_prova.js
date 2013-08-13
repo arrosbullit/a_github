@@ -1,40 +1,28 @@
+//Actiu
 var notCurrent = new Array();
 var current = new Array();
 var notCurrentPercent = new Array();
 var currentPercent = new Array();
 var myAssets;
 var myAssetsPercent;
-var colorCodes = new Array;
+
 //With of line that separates non-current and current
-var separationWidth = 2;
-/*
-colorCodes.push("#FF0000"); //1 roig
-colorCodes.push("#FF7400"); //2 taronja
-colorCodes.push("#FFC673"); //3 taronja clar 
-colorCodes.push("#FFD300"); //4 groc 
-colorCodes.push("#C9F76F"); //5 FFAA00 groc -> verd clar
-colorCodes.push("#9FEE00"); //6 verd clar més fosc
-colorCodes.push("#00CC00"); //7 verd
-colorCodes.push("#009999"); //8 blau clar
-colorCodes.push("#1240AB"); //9 blau més fosc
-colorCodes.push("#DF64BD"); //5 FFFF00 groc -> lila clar
-colorCodes.push("#CD0074"); //12 lila
-colorCodes.push("#7109AA"); //11 carmin
-*/
+var liquidityLineSeparationWidth = 2;
+var patrimoniNetSeparationWidth = 2;
+var passiveLineSeparationWidth = 2;
+var canvasHeight = 500;
+var canvasWidth = 302;
+//My color palette
+var colorCodes = new Array;
 colorCodes.push("#00BB3F");
 colorCodes.push("#00A287");
-//colorCodes.push("#006957");
-//colorCodes.push("#1E796A");
 colorCodes.push("#1240AB");
 colorCodes.push("#4671D5");
 colorCodes.push("#6C8CD5");
 colorCodes.push("#06266F");
-//colorCodes.push("#00B945"); 
 colorCodes.push("#0776A0"); 
-//colorCodes.push("#162EAE"); 
 colorCodes.push("#4711AE"); 
 colorCodes.push("#8805A8"); 
-
 
 function  BSLine(lineName, value)
 {
@@ -48,8 +36,6 @@ function Assets(notCurrent, current)
 	this.current = current;
 }
 
-
-
 notCurrent.push(new BSLine("Inmovilizado material", 59783));
 notCurrent.push(new BSLine("Activos Intangibles", 144440));
 notCurrent.push(new BSLine("Inversiones en asociadas", 0));
@@ -61,7 +47,6 @@ current.push(new BSLine("Existencias", 55738));
 current.push(new BSLine("Clientes y otras cuentas a cobrar", 45285));
 current.push(new BSLine("Activos financieros disponibles para la venta", 15173));
 current.push(new BSLine("Activos a valor razonable con cambios en resultados", 0 ));
-
 current.push(new BSLine("Instrumentos financieros derivados", 0));
 current.push(new BSLine("Activos por impuestos corrientes", 6470));
 current.push(new BSLine("Otros activos financieros", 0));
@@ -73,11 +58,9 @@ myAssets = new Assets(notCurrent, current);
 
 //Add up all not current assets
 var totalAssets = 0;
-console.log("Not current assets");
 for (var i = 0; i < myAssets.notCurrent.length; i++)
 {
 	tmp = myAssets.notCurrent[i];
-	console.log(tmp.lineName + " " + tmp.value);
 	if(!isNaN(tmp.value)){
 		totalAssets = totalAssets + tmp.value;
 	}
@@ -88,7 +71,6 @@ console.log("Current assets");
 for (var i = 0; i < myAssets.current.length; i++)
 {
 	tmp = myAssets.current[i];
-	console.log(tmp.lineName + " " + tmp.value);
 	if(!isNaN(tmp.value)){
 		totalAssets = totalAssets + tmp.value;
 	}
@@ -97,7 +79,6 @@ for (var i = 0; i < myAssets.current.length; i++)
 console.log("Total activo " + totalAssets);
 
 //Calculate percentages
-
 //Do not-current percentages
 for (var i = 0; i < myAssets.notCurrent.length; i++)
 {
@@ -105,9 +86,10 @@ for (var i = 0; i < myAssets.notCurrent.length; i++)
 	var percent = 0;
 	if(!isNaN(tmp.value)){
 		percent = tmp.value * 100 / totalAssets;
+		console.log("Percent " + percent);
 	}
 	notCurrentPercent.push(new BSLine(tmp.lineName, percent));
-	console.log(notCurrentPercent[i].lineName + " " + notCurrentPercent[i].value);
+	//console.log(notCurrentPercent[i].lineName + " " + notCurrentPercent[i].value);
 }
 //Do current percentages
 for (var i = 0; i < myAssets.current.length; i++)
@@ -116,18 +98,127 @@ for (var i = 0; i < myAssets.current.length; i++)
 	var percent = 0;
 	if(!isNaN(tmp.value)){
 		percent = tmp.value * 100 / totalAssets;
+		console.log("Percent " + percent);
 	}
 	currentPercent.push(new BSLine(tmp.lineName, percent));
-	console.log(currentPercent[i].lineName + " " + currentPercent[i].value);
+	//console.log(currentPercent[i].lineName + " " + currentPercent[i].value);
 }
 
 myAssetsPercent = new Assets(notCurrentPercent, currentPercent);
 
-//Aquesta funcio es crida quan es fa click sobre el quadrat
+//Passiu
+var patrimoniNet = new Array();
+var passiuNoCorrent = new Array();
+var passiuCorrent = new Array();
+
+var patrimoniNetPercent = new Array();
+var passiuNoCorrentPercent = new Array();
+var passiuCorrentPercent = new Array();
+
+var myPassiu;
+var myPassiuPercent;
+
+function Passiu(patrimoniNet, noCorrent, corrent)
+{
+	this.patrimoniNet = patrimoniNet;
+	this.noCorrent = noCorrent;
+	this.corrent = corrent;
+}
+
+patrimoniNet.push(new BSLine("Capital ordinario", 56974));
+patrimoniNet.push(new BSLine("Prima de emisión", 63432));
+patrimoniNet.push(new BSLine("Participaciones no dominantes  - Otras reservas", 9608));
+
+passiuNoCorrent.push(new BSLine("Deuda financiera", 141447));
+passiuNoCorrent.push(new BSLine("Instrumentos financieros derivados", 5103));
+passiuNoCorrent.push(new BSLine("Pasivos por impuestos diferidos", 3819));
+passiuNoCorrent.push(new BSLine("Otros pasivos financieros", 8150));
+passiuNoCorrent.push(new BSLine("Otros pasivos y subvenciones de capital", 1343));
+passiuNoCorrent.push(new BSLine("Provisiones para otros pasivos y gastos", 2033));
+
+passiuCorrent.push(new BSLine("Proveedores y otras cuentas a pagar", 42373));
+passiuCorrent.push(new BSLine("Pasivos por impuestos corrientes", 7866));
+passiuCorrent.push(new BSLine("Deuda financiera", 9058));
+passiuCorrent.push(new BSLine("Instrumentos financieros derivados", 189));
+passiuCorrent.push(new BSLine("Otros pasivos financieros", 670));
+passiuCorrent.push(new BSLine("Provisiones para otros pasivos y gastos", 79));
+passiuCorrent.push(new BSLine("Otros pasivos corrientes", 7904));
+passiuCorrent.push(new BSLine("Pasivos del Grupo enajenable clasificados como mantenidos para la venta", 0));
+	
+myPassiu = new Passiu(patrimoniNet, passiuNoCorrent, passiuCorrent);
+
+//Suma tot el patrimoni net
+var totalPassiu = 0;
+for (var i = 0; i < myPassiu.patrimoniNet.length; i++)
+{
+	tmp = myPassiu.patrimoniNet[i];
+	if(!isNaN(tmp.value)){
+		totalPassiu = totalPassiu + tmp.value;
+	}
+}
+//Suma el passiu no corrent
+for (var i = 0; i < myPassiu.noCorrent.length; i++)
+{
+	tmp = myPassiu.noCorrent[i];
+	if(!isNaN(tmp.value)){
+		totalPassiu = totalPassiu + tmp.value;
+	}
+}
+//Suma el passiu corrent
+for (var i = 0; i < myPassiu.corrent.length; i++)
+{
+	tmp = myPassiu.corrent[i];
+	if(!isNaN(tmp.value)){
+		totalPassiu = totalPassiu + tmp.value;
+	}
+}
+console.log("Total passiu " + totalPassiu);
+//Calculate percentages
+//Patrimoni net percentages
+for (var i = 0; i < myPassiu.patrimoniNet.length; i++)
+{
+	tmp = myPassiu.patrimoniNet[i];
+	var percent = 0;
+	if(!isNaN(tmp.value)){
+		percent = tmp.value * 100 / totalPassiu;
+		console.log("Percent " + percent);
+	}
+	patrimoniNetPercent.push(new BSLine(tmp.lineName, percent));
+}
+//Percentatges del passiu no corrent
+for (var i = 0; i < myPassiu.noCorrent.length; i++)
+{
+	tmp = myPassiu.noCorrent[i];
+	var percent = 0;
+	if(!isNaN(tmp.value)){
+		percent = tmp.value * 100 / totalPassiu;
+		console.log("Percent " + percent);
+	}
+	passiuNoCorrentPercent.push(new BSLine(tmp.lineName, percent));
+}
+//Percentatges del passiu corrent
+for (var i = 0; i < myPassiu.corrent.length; i++)
+{
+	tmp = myPassiu.corrent[i];
+	var percent = 0;
+	if(!isNaN(tmp.value)){
+		percent = tmp.value * 100 / totalPassiu;
+		console.log("Percent " + percent);
+	}
+	passiuCorrentPercent.push(new BSLine(tmp.lineName, percent));
+}
+
+myPassiuPercent = new Passiu(
+	patrimoniNetPercent,
+	passiuNoCorrentPercent, 
+	passiuCorrentPercent);
+
 
 function myFunction()
 {
-	var canvasHeight = 500;
+	console.log('myFunction()')
+
+	var columnWidth = (canvasWidth - passiveLineSeparationWidth)/2;
 	//Create some text
 	var para=document.createElement("p");
 	var node=document.createTextNode("This is new.");
@@ -139,22 +230,18 @@ function myFunction()
 	//Create the canvas
 	var canvas = document.createElement("canvas");
 	canvas.id = "myCanvas";
-	canvas.width = "400";
+	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
 	canvas.style = "border:1px solid #c3c3c3;";
 	//Add the canvas
 	divElement.appendChild(canvas);
 	
-
-	console.log('myFunction()')
-	
 	var c=document.getElementById("myCanvas");
 	var ctx=c.getContext("2d");
 	ctx.restore();
-	ctx.fillStyle="080";
-	ctx.fillRect(0,0,150,canvasHeight);	
 	
 	//Fes un rectangle  amb seccions de colors
+	var myX = 0;
 	var lastY = 0;
 	var colorIdx = 0;
 	for(var i = 0; i < myAssetsPercent.notCurrent.length; i++){
@@ -162,30 +249,85 @@ function myFunction()
 		//val = 100 / (myAssetsPercent.notCurrent.length + myAssetsPercent.current.length);
 		if(val != 0){
 			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
-			var sectionHeight = (val / 100) * (canvasHeight - separationWidth);
-			ctx.fillRect(0, lastY, 150, sectionHeight);	
+			var sectionHeight = (val / 100) * (canvasHeight - liquidityLineSeparationWidth);
+			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
 			lastY = lastY + sectionHeight;
 			colorIdx++;
 		}
 	}
 	
+	//Draw line to separate non-current and current
+	ctx.fillStyle = "white";
+	ctx.fillRect(myX, lastY, columnWidth, lastY + liquidityLineSeparationWidth);
+	lastY = lastY + liquidityLineSeparationWidth;
 	
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, lastY, 150, lastY + separationWidth);
-	lastY = lastY + separationWidth;
-	
+	//Draw the current stuff
 	for(var i = 0; i < myAssetsPercent.current.length; i++){
 		var val = myAssetsPercent.current[i].value;
 		//val = 100 / (myAssetsPercent.notCurrent.length + myAssetsPercent.current.length);
 		if(val != 0){
 			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
-			var sectionHeight = (val / 100) * (canvasHeight - separationWidth);
-			ctx.fillRect(0, lastY, 150, sectionHeight);	
+			var sectionHeight = (val / 100) * (canvasHeight - liquidityLineSeparationWidth);
+			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
 			lastY = lastY + sectionHeight;
 			colorIdx++;
 		}
 	}
 	
+	//Dibuixa els passius
+	//Calculate percentages
+	//Patrimoni net percentages
+	//Fes un rectangle  amb seccions de colors
+	var availHeight = canvasHeight - liquidityLineSeparationWidth - 
+						patrimoniNetSeparationWidth;
+	myX = columnWidth + 2;
+	lastY = 0;
+	colorIdx = 0;
+	//Dibuixa el patrimoni net
+	for(var i = 0; i < myPassiuPercent.patrimoniNet.length; i++){
+		var val = myPassiuPercent.patrimoniNet[i].value;
+		if(val != 0){
+			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
+			var sectionHeight = (val / 100) * availHeight;
+			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}
+	//Draw line to separate el patrimoni net
+	ctx.fillStyle = "white";
+	ctx.fillRect(myX, lastY, columnWidth, lastY + patrimoniNetSeparationWidth);
+	lastY = lastY + patrimoniNetSeparationWidth;	
+	//Dibuixa el passiu no corrent
+	for(var i = 0; i < myPassiuPercent.noCorrent.length; i++){
+		var val = myPassiuPercent.noCorrent[i].value;
+		console.log("passiu no corrent" + val);
+		if(val != 0){
+			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
+			var sectionHeight = (val / 100) * availHeight;
+			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}
+	//Draw line to separate non-current and current
+	ctx.fillStyle = "white";
+	ctx.fillRect(myX, lastY, columnWidth, lastY + liquidityLineSeparationWidth);
+	lastY = lastY + liquidityLineSeparationWidth;	
+	//Dibuixa el passiu  corrent
+	for(var i = 0; i < myPassiuPercent.corrent.length; i++){
+		var val = myPassiuPercent.corrent[i].value;
+		if(val != 0){
+			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
+			var sectionHeight = (val / 100) * availHeight;
+			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}	
 }
+
+
+
 
 
