@@ -11,7 +11,7 @@ var liquidityLineSeparationWidth = 2;
 var patrimoniNetSeparationWidth = 2;
 var passiveLineSeparationWidth = 2;
 var canvasHeight = 500;
-var canvasWidth = 302;
+var canvasWidth =  302;
 var columnWidth = (canvasWidth - passiveLineSeparationWidth)/2;
 //My color palette
 var colorCodes = new Array;
@@ -330,11 +330,14 @@ function myFunction()
 
 function dibuixaSVGBS()
 {
+	console.log("dibuixaSVGBS()");
     var container = document.getElementById("svgContainer");
 	var mySVG = document.createElementNS("http://www.w3.org/2000/svg",
 	 "svg");
 	mySVG.setAttribute("version", "1.2");
 	mySVG.setAttribute("baseProfile", "tiny");
+	mySVG.setAttribute("width", canvasWidth + "px");
+	mySVG.setAttribute("height", canvasHeight + "px");
 	container.appendChild(mySVG);
 	
 	//Fes un rectangle  amb seccions de colors
@@ -344,6 +347,7 @@ function dibuixaSVGBS()
 	var colorIdx = 0;
 	for(var i = 0; i < myAssetsPercent.notCurrent.length; i++){	
 		var val = myAssetsPercent.notCurrent[i].value;
+		var text = myAssetsPercent.notCurrent[i].lineName;
 		if(val != 0 && isNaN(val) == false){
 			var sectionHeight = (val / 100) * 
 				(canvasHeight - liquidityLineSeparationWidth);
@@ -354,6 +358,12 @@ function dibuixaSVGBS()
 			r = doRect(mySVG, myX, lastY, columnWidth, 
 				sectionHeight, fill,
 				customData1, customData2, myCallback);
+			//Add text
+			var shortText = getShortenedVersion(text);
+			if(shortText.length){
+				doText(mySVG, myX, lastY, sectionHeight,
+				shortText, val, myAssets.notCurrent[i].value);
+			}
 			//loop increments
 			lastY = lastY + sectionHeight;
 			colorIdx++;
@@ -368,6 +378,7 @@ function dibuixaSVGBS()
 	//Draw the current stuff
 	for(var i = 0; i < myAssetsPercent.current.length; i++){
 		var val = myAssetsPercent.current[i].value;
+		var text = myAssetsPercent.current[i].lineName;
 		if(val != 0 && isNaN(val) == false){
 			var sectionHeight = (val / 100) * 
 				(canvasHeight - liquidityLineSeparationWidth);
@@ -378,6 +389,12 @@ function dibuixaSVGBS()
 			r = doRect(mySVG, myX, lastY, columnWidth, 
 				sectionHeight, fill,
 				customData1, customData2, myCallback);
+			//Add text
+			var shortText = getShortenedVersion(text);
+			if(shortText.length){
+				doText(mySVG, myX, lastY, sectionHeight,
+				shortText, val, myAssets.current[i].value);
+			}
 			//loop increments
 			lastY = lastY + sectionHeight;
 			colorIdx++;
@@ -396,6 +413,7 @@ function dibuixaSVGBS()
 	//Dibuixa el patrimoni net
 	for(var i = 0; i < myPassiuPercent.patrimoniNet.length; i++){
 		var val = myPassiuPercent.patrimoniNet[i].value;
+		var text = myPassiuPercent.patrimoniNet[i].lineName;
 		if(val != 0 && isNaN(val) == false){
 			var sectionHeight = (val / 100) * availHeight;
 			var fill = colorCodes[colorIdx % colorCodes.length];
@@ -405,6 +423,12 @@ function dibuixaSVGBS()
 			r = doRect(mySVG, myX, lastY, columnWidth, 
 				sectionHeight, fill,
 				customData1, customData2, myCallback);
+			//Add text
+			var shortText = getShortenedVersion(text);
+			if(shortText.length){
+				doText(mySVG, myX, lastY, sectionHeight,
+				shortText, val, myPassiu.patrimoniNet[i].value);
+			}
 			//loop increments
 			lastY = lastY + sectionHeight;
 			colorIdx++;
@@ -418,6 +442,7 @@ function dibuixaSVGBS()
 
 	//Dibuixa el passiu no corrent
 	for(var i = 0; i < myPassiuPercent.noCorrent.length; i++){
+		var text = myPassiuPercent.noCorrent[i].lineName;
 		var val = myPassiuPercent.noCorrent[i].value;
 		//console.log("passiu no corrent" + val);
 		if(val != 0 && isNaN(val) == false){
@@ -429,6 +454,12 @@ function dibuixaSVGBS()
 			r = doRect(mySVG, myX, lastY, columnWidth, 
 				sectionHeight, fill,
 				customData1, customData2, myCallback);
+			//Add text
+			var shortText = getShortenedVersion(text);
+			if(shortText.length){
+				doText(mySVG, myX, lastY, sectionHeight,
+				shortText, val, myPassiu.noCorrent[i].value);
+			}
 			//loop increments
 			lastY = lastY + sectionHeight;
 			colorIdx++;
@@ -443,6 +474,7 @@ function dibuixaSVGBS()
 	//Dibuixa el passiu  corrent
 	for(var i = 0; i < myPassiuPercent.corrent.length; i++){
 		var val = myPassiuPercent.corrent[i].value;
+		var text = myPassiuPercent.corrent[i].lineName;
 		if(val != 0 && isNaN(val) == false){
 			var sectionHeight = (val / 100) * availHeight;
 			var fill = colorCodes[colorIdx % colorCodes.length];
@@ -452,6 +484,12 @@ function dibuixaSVGBS()
 			r = doRect(mySVG, myX, lastY, columnWidth, 
 				sectionHeight, fill,
 				customData1, customData2, myCallback);
+			//Add text
+			var shortText = getShortenedVersion(text);
+			if(shortText.length){
+				doText(mySVG, myX, lastY, sectionHeight,
+				shortText, val, myPassiu.corrent[i].value);
+			}
 			//loop increments
 			lastY = lastY + sectionHeight;
 			colorIdx++;
@@ -487,47 +525,181 @@ function doRect(mySVG, x, y, width, height, fill,
 
 function onclick_actiuNoCorrent(obj)
 {
+	removeHighlight();
+	obj.setAttribute("opacity", "0.25");
 	var idx = obj.getAttribute("data-arrayIdx");
 	if(idx == null) idx = 0;
 	var txt = notCurrent[idx].lineName;
 	var val = notCurrent[idx].value;
 	var percent = notCurrentPercent[idx].value;
-	console.log(txt + " " + val + " " + percent);
+	console.log(txt);
+	var val2 = accounting.formatMoney(val, "", 0, ".", ",");
+	percent = accounting.formatMoney(percent, "", 1, ".", ",");
+	console.log( val2 + " " + percent + "%");
+	displaySectionInfo(txt, val2, percent + "%");
+	getShortenedVersion(txt);
 }
 function onclick_actiuCorrent(obj)
 {
+	removeHighlight();
+	obj.setAttribute("opacity", "0.25");
 	var idx = obj.getAttribute("data-arrayIdx");
 	if(idx == null) idx = 0;
 	var txt = current[idx].lineName;
 	var val = current[idx].value;
 	var percent = currentPercent[idx].value;
-	console.log(txt + " " + val + " " + percent);
+	console.log(txt);
+	var val2 = accounting.formatMoney(val, "", 0, ".", ",");
+	percent = accounting.formatMoney(percent, "", 1, ".", ",");
+	console.log( val2 + " " + percent + "%");
+	displaySectionInfo(txt, val2, percent + "%");
+	getShortenedVersion(txt);
 }
 function onclick_patrimoniNet(obj)
 {
+	removeHighlight();
+	obj.setAttribute("opacity", "0.25");
 	var idx = obj.getAttribute("data-arrayIdx");
 	if(idx == null) idx = 0;
 	var txt = patrimoniNet[idx].lineName;
 	var val = patrimoniNet[idx].value;
 	var percent = patrimoniNetPercent[idx].value;
-	console.log(txt + " " + val + " " + percent);
+	console.log(txt);
+	var val2 = accounting.formatMoney(val, "", 0, ".", ",");
+	percent = accounting.formatMoney(percent, "", 1, ".", ",");
+	console.log( val2 + " " + percent + "%");
+	displaySectionInfo(txt, val2, percent + "%");
+	getShortenedVersion(txt);
 }
 function onclick_passiuNoCorrent(obj)
 {
+	removeHighlight();
+	obj.setAttribute("opacity", "0.25");
 	var idx = obj.getAttribute("data-arrayIdx");
 	if(idx == null) idx = 0;
 	var txt = passiuNoCorrent[idx].lineName;
 	var val = passiuNoCorrent[idx].value;
 	var percent = passiuNoCorrentPercent[idx].value;
-	console.log(txt + " " + val + " " + percent);
+	console.log(txt);
+	var val2 = accounting.formatMoney(val, "", 0, ".", ",");
+	percent = accounting.formatMoney(percent, "", 1, ".", ",");
+	console.log( val2 + " " + percent + "%");
+	displaySectionInfo(txt, val2, percent + "%");
+	getShortenedVersion(txt);
 }
 function onclick_passiuCorrent(obj)
 {
+	removeHighlight();
+	obj.setAttribute("opacity", "0.25");
 	var idx = obj.getAttribute("data-arrayIdx");
 	if(idx == null) idx = 0;
 	var txt = passiuCorrent[idx].lineName;
 	var val = passiuCorrent[idx].value;
 	var percent = passiuCorrentPercent[idx].value;
-	console.log(txt + " " + val + " " + percent);
+	console.log(txt);
+	var val2 = accounting.formatMoney(val, "", 0, ".", ",");
+	percent = accounting.formatMoney(percent, "", 1, ".", ",");
+	console.log( val2 + " " + percent + "%");
+	displaySectionInfo(txt, val2, percent + "%");
+	getShortenedVersion(txt);
 }
+
+function displaySectionInfo(text, value, percentage)
+{
+   var container = document.getElementById("sectionInfo");
+   
+   //Remove all child nodes
+	while(container.hasChildNodes()){
+		container.removeChild(container.lastChild);
+	}
+	var para=document.createElement("p");
+	para.textContent = text;
+	container.appendChild(para);	
+	var para=document.createElement("p");
+	para.textContent = percentage;
+	container.appendChild(para);	
+	var para=document.createElement("p");
+	para.textContent = value;
+	container.appendChild(para);	
+}
+
+function removeHighlight()
+{
+	var container = document.getElementById("svgContainer");
+	container = container.getElementsByTagName("svg");
+	var childs = container[0].childNodes;
+	for(var i = 0; i < childs.length; i++){
+		childs[i].setAttribute("opacity", "1");
+	}
+}
+
+function getShortenedVersion(inText)
+{
+	var emptyText = "";
+	var tmpText = inText.toLowerCase();
+	var myShorts = ["inmovilizado", "intangible", "existencias",
+					"clientes", "financieros", "efectivo",
+					"capital", "prima", "deuda", "proveedores" ];
+					
+	for(var i = 0; i < myShorts.length; i++){
+		if(tmpText.search(myShorts[i]) != -1){
+			console.log("shortened: " + myShorts[i]);
+			return myShorts[i];
+		}
+	}
+	return emptyText;
+}
+
+function doText(mySVG, x, y, sectionHeight, text, text2, text3)
+{
+	var fontSize = 20; 	
+	var font2Size = 15;
+	var font2Margin = 5;
+	if(sectionHeight < fontSize){
+		return;
+	}
+	var t = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"text");
+	t.setAttribute("x", x + fontSize);
+	t.setAttribute("y", y + fontSize);
+	t.setAttribute("font-size", fontSize);
+	t.setAttribute("fill", "black");
+	t.setAttribute("pointer-events", "none"); //click passthrough
+	t.textContent = text;
+	mySVG.appendChild(t);	
+	//Add the percent
+	if(sectionHeight < (fontSize + font2Size + font2Margin) ){
+		return;
+	}
+	var v = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"text");
+	v.setAttribute("x", x + fontSize);
+	v.setAttribute("y", y + fontSize + font2Size + font2Margin);
+	v.setAttribute("font-size", font2Size);
+	v.setAttribute("fill", "black");
+	v.setAttribute("pointer-events", "none"); //click passthrough
+	var percentVal = accounting.formatMoney(text2, "", 1, ".", ",");
+	v.textContent = percentVal + "%";
+	mySVG.appendChild(v);	
+	//Add the value
+	if(sectionHeight < (fontSize + 2 * font2Size + 2 * font2Margin) ){
+		return;
+	}
+	var w = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"text");
+	w.setAttribute("x", x + fontSize);
+	w.setAttribute("y", y + fontSize + 2 * font2Size + font2Margin);
+	w.setAttribute("font-size", font2Size);
+	w.setAttribute("fill", "black");
+	w.setAttribute("pointer-events", "none"); //click passthrough
+	var currencyVal = accounting.formatMoney(text3, "", 0,
+					 ".", ",");
+	w.textContent = currencyVal;
+	mySVG.appendChild(w);	
+
+}
+
 
