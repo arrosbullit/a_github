@@ -12,6 +12,7 @@ var patrimoniNetSeparationWidth = 2;
 var passiveLineSeparationWidth = 2;
 var canvasHeight = 500;
 var canvasWidth = 302;
+var columnWidth = (canvasWidth - passiveLineSeparationWidth)/2;
 //My color palette
 var colorCodes = new Array;
 colorCodes.push("#00BB3F");
@@ -67,7 +68,7 @@ for (var i = 0; i < myAssets.notCurrent.length; i++)
 }
 
 //Add up all current assets
-console.log("Current assets");
+//console.log("Current assets");
 for (var i = 0; i < myAssets.current.length; i++)
 {
 	tmp = myAssets.current[i];
@@ -76,7 +77,7 @@ for (var i = 0; i < myAssets.current.length; i++)
 	}
 }
 
-console.log("Total activo " + totalAssets);
+//console.log("Total activo " + totalAssets);
 
 //Calculate percentages
 //Do not-current percentages
@@ -86,7 +87,7 @@ for (var i = 0; i < myAssets.notCurrent.length; i++)
 	var percent = 0;
 	if(!isNaN(tmp.value)){
 		percent = tmp.value * 100 / totalAssets;
-		console.log("Percent " + percent);
+		//console.log("Percent " + percent);
 	}
 	notCurrentPercent.push(new BSLine(tmp.lineName, percent));
 	//console.log(notCurrentPercent[i].lineName + " " + notCurrentPercent[i].value);
@@ -98,7 +99,7 @@ for (var i = 0; i < myAssets.current.length; i++)
 	var percent = 0;
 	if(!isNaN(tmp.value)){
 		percent = tmp.value * 100 / totalAssets;
-		console.log("Percent " + percent);
+		//console.log("Percent " + percent);
 	}
 	currentPercent.push(new BSLine(tmp.lineName, percent));
 	//console.log(currentPercent[i].lineName + " " + currentPercent[i].value);
@@ -172,7 +173,7 @@ for (var i = 0; i < myPassiu.corrent.length; i++)
 		totalPassiu = totalPassiu + tmp.value;
 	}
 }
-console.log("Total passiu " + totalPassiu);
+//console.log("Total passiu " + totalPassiu);
 //Calculate percentages
 //Patrimoni net percentages
 for (var i = 0; i < myPassiu.patrimoniNet.length; i++)
@@ -181,7 +182,7 @@ for (var i = 0; i < myPassiu.patrimoniNet.length; i++)
 	var percent = 0;
 	if(!isNaN(tmp.value)){
 		percent = tmp.value * 100 / totalPassiu;
-		console.log("Percent " + percent);
+		//console.log("Percent " + percent);
 	}
 	patrimoniNetPercent.push(new BSLine(tmp.lineName, percent));
 }
@@ -192,7 +193,7 @@ for (var i = 0; i < myPassiu.noCorrent.length; i++)
 	var percent = 0;
 	if(!isNaN(tmp.value)){
 		percent = tmp.value * 100 / totalPassiu;
-		console.log("Percent " + percent);
+		//console.log("Percent " + percent);
 	}
 	passiuNoCorrentPercent.push(new BSLine(tmp.lineName, percent));
 }
@@ -203,7 +204,7 @@ for (var i = 0; i < myPassiu.corrent.length; i++)
 	var percent = 0;
 	if(!isNaN(tmp.value)){
 		percent = tmp.value * 100 / totalPassiu;
-		console.log("Percent " + percent);
+		//console.log("Percent " + percent);
 	}
 	passiuCorrentPercent.push(new BSLine(tmp.lineName, percent));
 }
@@ -218,7 +219,7 @@ function myFunction()
 {
 	console.log('myFunction()')
 
-	var columnWidth = (canvasWidth - passiveLineSeparationWidth)/2;
+	
 	//Create some text
 	var para=document.createElement("p");
 	var node=document.createTextNode("This is new.");
@@ -301,7 +302,7 @@ function myFunction()
 	//Dibuixa el passiu no corrent
 	for(var i = 0; i < myPassiuPercent.noCorrent.length; i++){
 		var val = myPassiuPercent.noCorrent[i].value;
-		console.log("passiu no corrent" + val);
+		//console.log("passiu no corrent" + val);
 		if(val != 0){
 			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
 			var sectionHeight = (val / 100) * availHeight;
@@ -330,31 +331,203 @@ function myFunction()
 function dibuixaSVGBS()
 {
     var container = document.getElementById("svgContainer");
-	var mySvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-	mySvg.setAttribute("version", "1.2");
-	mySvg.setAttribute("baseProfile", "tiny");
-	container.appendChild(mySvg);
+	var mySVG = document.createElementNS("http://www.w3.org/2000/svg",
+	 "svg");
+	mySVG.setAttribute("version", "1.2");
+	mySVG.setAttribute("baseProfile", "tiny");
+	container.appendChild(mySVG);
 	
-	var c1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-	c1.setAttribute("cx", "100");
-	c1.setAttribute("cy", "100");
-	c1.setAttribute("r", "60");
-	c1.setAttribute("fill", "#336699");
-	c1.setAttribute("id", "myID");
-	c1.setAttribute("data-CA", "myCustomAttribute");
-	c1.setAttribute("onclick", "onclick_function(this)");
-	mySvg.appendChild(c1);
+	//Fes un rectangle  amb seccions de colors
+	var r;
+	var myX = 0;
+	var lastY = 0;
+	var colorIdx = 0;
+	for(var i = 0; i < myAssetsPercent.notCurrent.length; i++){	
+		var val = myAssetsPercent.notCurrent[i].value;
+		if(val != 0 && isNaN(val) == false){
+			var sectionHeight = (val / 100) * 
+				(canvasHeight - liquidityLineSeparationWidth);
+			var fill = colorCodes[colorIdx % colorCodes.length];
+			var customData1 = "notused";
+			var customData2 = i;
+			var myCallback = "onclick_actiuNoCorrent(this)";
+			r = doRect(mySVG, myX, lastY, columnWidth, 
+				sectionHeight, fill,
+				customData1, customData2, myCallback);
+			//loop increments
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}
+	
+	//Draw line to separate non-current and current
+	doRect(mySVG, myX, lastY, columnWidth, 
+		lastY + liquidityLineSeparationWidth, "white");
+	lastY = lastY + liquidityLineSeparationWidth;
+	
+	//Draw the current stuff
+	for(var i = 0; i < myAssetsPercent.current.length; i++){
+		var val = myAssetsPercent.current[i].value;
+		if(val != 0 && isNaN(val) == false){
+			var sectionHeight = (val / 100) * 
+				(canvasHeight - liquidityLineSeparationWidth);
+			var fill = colorCodes[colorIdx % colorCodes.length];
+			var customData1 = "notused";
+			var customData2 = i;
+			var myCallback = "onclick_actiuCorrent(this)";
+			r = doRect(mySVG, myX, lastY, columnWidth, 
+				sectionHeight, fill,
+				customData1, customData2, myCallback);
+			//loop increments
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}		
+	
+	//Dibuixa els passius
+	//Calculate percentages
+	//Patrimoni net percentages
+	//Fes un rectangle  amb seccions de colors	
+	var availHeight = canvasHeight - liquidityLineSeparationWidth - 
+						patrimoniNetSeparationWidth;
+	myX = columnWidth + 2;
+	lastY = 0;
+	colorIdx = 0;
+	//Dibuixa el patrimoni net
+	for(var i = 0; i < myPassiuPercent.patrimoniNet.length; i++){
+		var val = myPassiuPercent.patrimoniNet[i].value;
+		if(val != 0 && isNaN(val) == false){
+			var sectionHeight = (val / 100) * availHeight;
+			var fill = colorCodes[colorIdx % colorCodes.length];
+			var customData1 = "notused";
+			var customData2 = i;
+			var myCallback = "onclick_patrimoniNet(this)";
+			r = doRect(mySVG, myX, lastY, columnWidth, 
+				sectionHeight, fill,
+				customData1, customData2, myCallback);
+			//loop increments
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}
+	
+	//Draw line to separate el patrimoni net
+	doRect(mySVG, myX, lastY, columnWidth, 
+		lastY + patrimoniNetSeparationWidth, "white");
+	lastY = lastY + patrimoniNetSeparationWidth;	
+
+	//Dibuixa el passiu no corrent
+	for(var i = 0; i < myPassiuPercent.noCorrent.length; i++){
+		var val = myPassiuPercent.noCorrent[i].value;
+		//console.log("passiu no corrent" + val);
+		if(val != 0 && isNaN(val) == false){
+			var sectionHeight = (val / 100) * availHeight;
+			var fill = colorCodes[colorIdx % colorCodes.length];
+			var customData1 = "notused";
+			var customData2 = i;
+			var myCallback = "onclick_passiuNoCorrent(this)";
+			r = doRect(mySVG, myX, lastY, columnWidth, 
+				sectionHeight, fill,
+				customData1, customData2, myCallback);
+			//loop increments
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}
+	
+	//Draw line to separate non-current and current
+	doRect(mySVG, myX, lastY, columnWidth, 
+		lastY + liquidityLineSeparationWidth, "white");
+	lastY = lastY + liquidityLineSeparationWidth;	
+
+	//Dibuixa el passiu  corrent
+	for(var i = 0; i < myPassiuPercent.corrent.length; i++){
+		var val = myPassiuPercent.corrent[i].value;
+		if(val != 0 && isNaN(val) == false){
+			var sectionHeight = (val / 100) * availHeight;
+			var fill = colorCodes[colorIdx % colorCodes.length];
+			var customData1 = "notUsed";
+			var customData2 = i;
+			var myCallback = "onclick_passiuCorrent(this)";
+			r = doRect(mySVG, myX, lastY, columnWidth, 
+				sectionHeight, fill,
+				customData1, customData2, myCallback);
+			//loop increments
+			lastY = lastY + sectionHeight;
+			colorIdx++;
+		}
+	}	
+	
 }
 
-function onclick_function(obj)
+//Returns rectangle with the specified input params
+function doRect(mySVG, x, y, width, height, fill, 
+				customData1, customData2, myCallback)
 {
-	console.log("onclick_function()");
-	console.log("id " + obj.id);
-	var myCA = obj.getAttribute("data-CA");
-	console.log("data-CA " + myCA);
+	var r = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"rect");
+	r.setAttribute("x", x);
+	r.setAttribute("y", y);
+	r.setAttribute("width", width);
+	r.setAttribute("height", height);
+	r.setAttribute("fill", fill);
+	if(customData1){
+		r.setAttribute("data-arrayId", customData1);
+	}
+	if(customData2){
+		r.setAttribute("data-arrayIdx", customData2);
+	}
+	if(myCallback){
+		r.setAttribute("onclick", myCallback);	
+	}
+	mySVG.appendChild(r);
+	return r;
 }
 
-
-
-
+function onclick_actiuNoCorrent(obj)
+{
+	var idx = obj.getAttribute("data-arrayIdx");
+	if(idx == null) idx = 0;
+	var txt = notCurrent[idx].lineName;
+	var val = notCurrent[idx].value;
+	var percent = notCurrentPercent[idx].value;
+	console.log(txt + " " + val + " " + percent);
+}
+function onclick_actiuCorrent(obj)
+{
+	var idx = obj.getAttribute("data-arrayIdx");
+	if(idx == null) idx = 0;
+	var txt = current[idx].lineName;
+	var val = current[idx].value;
+	var percent = currentPercent[idx].value;
+	console.log(txt + " " + val + " " + percent);
+}
+function onclick_patrimoniNet(obj)
+{
+	var idx = obj.getAttribute("data-arrayIdx");
+	if(idx == null) idx = 0;
+	var txt = patrimoniNet[idx].lineName;
+	var val = patrimoniNet[idx].value;
+	var percent = patrimoniNetPercent[idx].value;
+	console.log(txt + " " + val + " " + percent);
+}
+function onclick_passiuNoCorrent(obj)
+{
+	var idx = obj.getAttribute("data-arrayIdx");
+	if(idx == null) idx = 0;
+	var txt = passiuNoCorrent[idx].lineName;
+	var val = passiuNoCorrent[idx].value;
+	var percent = passiuNoCorrentPercent[idx].value;
+	console.log(txt + " " + val + " " + percent);
+}
+function onclick_passiuCorrent(obj)
+{
+	var idx = obj.getAttribute("data-arrayIdx");
+	if(idx == null) idx = 0;
+	var txt = passiuCorrent[idx].lineName;
+	var val = passiuCorrent[idx].value;
+	var percent = passiuCorrentPercent[idx].value;
+	console.log(txt + " " + val + " " + percent);
+}
 
