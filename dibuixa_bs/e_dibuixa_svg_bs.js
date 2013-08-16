@@ -5,14 +5,35 @@ var notCurrentPercent = new Array();
 var currentPercent = new Array();
 var myAssets;
 var myAssetsPercent;
+var totalActiuCorrent = 0;
+var totalActiuNoCorrent = 0;
+//Vars per dibuixar els curly braces
+var actiuNoCorrentFirstY = 0;
+var actiuNoCorrentLastY = 0;
+
+var actiuCorrentFirstY = 0;
+var actiuCorrentLastY = 0;
+
+var patrimoniNetFirstY = 0;
+var patrimoniNetLastY = 0;
+
+var passiuNoCorrentFirstY = 0;
+var passiuNoCorrentLastY = 0;
+
+var passiuCorrentFirstY = 0;
+var passiuCorrentLastY = 0;
+
+var closingBraceMaxX = 0;
 
 //With of line that separates non-current and current
 var liquidityLineSeparationWidth = 2;
 var patrimoniNetSeparationWidth = 2;
 var passiveLineSeparationWidth = 2;
-var canvasHeight = 500;
-var canvasWidth =  302;
+var canvasHeight = 450;
+var canvasWidth =  242;
 var columnWidth = (canvasWidth - passiveLineSeparationWidth)/2;
+var canvasBottomExtraSize = 30;
+var canvasSideExtraSize = 70;
 //My color palette
 var colorCodes = new Array;
 colorCodes.push("#00BB3F");
@@ -64,6 +85,7 @@ for (var i = 0; i < myAssets.notCurrent.length; i++)
 	tmp = myAssets.notCurrent[i];
 	if(!isNaN(tmp.value)){
 		totalAssets = totalAssets + tmp.value;
+		totalActiuNoCorrent += tmp.value;
 	}
 }
 
@@ -74,6 +96,7 @@ for (var i = 0; i < myAssets.current.length; i++)
 	tmp = myAssets.current[i];
 	if(!isNaN(tmp.value)){
 		totalAssets = totalAssets + tmp.value;
+		totalActiuCorrent += tmp.value;
 	}
 }
 
@@ -118,6 +141,9 @@ var passiuCorrentPercent = new Array();
 
 var myPassiu;
 var myPassiuPercent;
+var totalPatrimoniNet = 0;
+var totalPassiuNoCorrent = 0;
+var totalPassiuCorrent = 0;
 
 function Passiu(patrimoniNet, noCorrent, corrent)
 {
@@ -155,6 +181,7 @@ for (var i = 0; i < myPassiu.patrimoniNet.length; i++)
 	tmp = myPassiu.patrimoniNet[i];
 	if(!isNaN(tmp.value)){
 		totalPassiu = totalPassiu + tmp.value;
+		totalPatrimoniNet += tmp.value;
 	}
 }
 //Suma el passiu no corrent
@@ -163,6 +190,7 @@ for (var i = 0; i < myPassiu.noCorrent.length; i++)
 	tmp = myPassiu.noCorrent[i];
 	if(!isNaN(tmp.value)){
 		totalPassiu = totalPassiu + tmp.value;
+		totalPassiuNoCorrent += tmp.value;
 	}
 }
 //Suma el passiu corrent
@@ -171,6 +199,7 @@ for (var i = 0; i < myPassiu.corrent.length; i++)
 	tmp = myPassiu.corrent[i];
 	if(!isNaN(tmp.value)){
 		totalPassiu = totalPassiu + tmp.value;
+		totalPassiuCorrent += tmp.value;
 	}
 }
 //console.log("Total passiu " + totalPassiu);
@@ -215,119 +244,6 @@ myPassiuPercent = new Passiu(
 	passiuCorrentPercent);
 
 
-function myFunction()
-{
-	console.log('myFunction()')
-
-	
-	//Create some text
-	var para=document.createElement("p");
-	var node=document.createTextNode("This is new.");
-	para.appendChild(node);
-	//Locate the div
-	var divElement = document.getElementById("bsDivId");
-	//Add text
-	divElement.appendChild(para);
-	//Create the canvas
-	var canvas = document.createElement("canvas");
-	canvas.id = "myCanvas";
-	canvas.width = canvasWidth;
-	canvas.height = canvasHeight;
-	canvas.style = "border:1px solid #c3c3c3;";
-	//Add the canvas
-	divElement.appendChild(canvas);
-	
-	var c=document.getElementById("myCanvas");
-	var ctx=c.getContext("2d");
-	ctx.restore();
-	
-	//Fes un rectangle  amb seccions de colors
-	var myX = 0;
-	var lastY = 0;
-	var colorIdx = 0;
-	for(var i = 0; i < myAssetsPercent.notCurrent.length; i++){
-		var val = myAssetsPercent.notCurrent[i].value;
-		//val = 100 / (myAssetsPercent.notCurrent.length + myAssetsPercent.current.length);
-		if(val != 0){
-			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
-			var sectionHeight = (val / 100) * (canvasHeight - liquidityLineSeparationWidth);
-			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
-			lastY = lastY + sectionHeight;
-			colorIdx++;
-		}
-	}
-	
-	//Draw line to separate non-current and current
-	ctx.fillStyle = "white";
-	ctx.fillRect(myX, lastY, columnWidth, lastY + liquidityLineSeparationWidth);
-	lastY = lastY + liquidityLineSeparationWidth;
-	
-	//Draw the current stuff
-	for(var i = 0; i < myAssetsPercent.current.length; i++){
-		var val = myAssetsPercent.current[i].value;
-		//val = 100 / (myAssetsPercent.notCurrent.length + myAssetsPercent.current.length);
-		if(val != 0){
-			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
-			var sectionHeight = (val / 100) * (canvasHeight - liquidityLineSeparationWidth);
-			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
-			lastY = lastY + sectionHeight;
-			colorIdx++;
-		}
-	}
-	
-	//Dibuixa els passius
-	//Calculate percentages
-	//Patrimoni net percentages
-	//Fes un rectangle  amb seccions de colors
-	var availHeight = canvasHeight - liquidityLineSeparationWidth - 
-						patrimoniNetSeparationWidth;
-	myX = columnWidth + 2;
-	lastY = 0;
-	colorIdx = 0;
-	//Dibuixa el patrimoni net
-	for(var i = 0; i < myPassiuPercent.patrimoniNet.length; i++){
-		var val = myPassiuPercent.patrimoniNet[i].value;
-		if(val != 0){
-			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
-			var sectionHeight = (val / 100) * availHeight;
-			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
-			lastY = lastY + sectionHeight;
-			colorIdx++;
-		}
-	}
-	//Draw line to separate el patrimoni net
-	ctx.fillStyle = "white";
-	ctx.fillRect(myX, lastY, columnWidth, lastY + patrimoniNetSeparationWidth);
-	lastY = lastY + patrimoniNetSeparationWidth;	
-	//Dibuixa el passiu no corrent
-	for(var i = 0; i < myPassiuPercent.noCorrent.length; i++){
-		var val = myPassiuPercent.noCorrent[i].value;
-		//console.log("passiu no corrent" + val);
-		if(val != 0){
-			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
-			var sectionHeight = (val / 100) * availHeight;
-			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
-			lastY = lastY + sectionHeight;
-			colorIdx++;
-		}
-	}
-	//Draw line to separate non-current and current
-	ctx.fillStyle = "white";
-	ctx.fillRect(myX, lastY, columnWidth, lastY + liquidityLineSeparationWidth);
-	lastY = lastY + liquidityLineSeparationWidth;	
-	//Dibuixa el passiu  corrent
-	for(var i = 0; i < myPassiuPercent.corrent.length; i++){
-		var val = myPassiuPercent.corrent[i].value;
-		if(val != 0){
-			ctx.fillStyle = colorCodes[colorIdx % colorCodes.length];
-			var sectionHeight = (val / 100) * availHeight;
-			ctx.fillRect(myX, lastY, columnWidth, sectionHeight);	
-			lastY = lastY + sectionHeight;
-			colorIdx++;
-		}
-	}	
-}
-
 function dibuixaSVGBS()
 {
 	console.log("dibuixaSVGBS()");
@@ -336,14 +252,17 @@ function dibuixaSVGBS()
 	 "svg");
 	mySVG.setAttribute("version", "1.2");
 	mySVG.setAttribute("baseProfile", "tiny");
-	mySVG.setAttribute("width", canvasWidth + "px");
-	mySVG.setAttribute("height", canvasHeight + "px");
+	var aux = canvasWidth + 2 * canvasSideExtraSize;
+	mySVG.setAttribute("width", aux + "px");
+	aux = canvasHeight + canvasBottomExtraSize;
+	mySVG.setAttribute("height", aux + "px");
 	container.appendChild(mySVG);
 	
 	//Fes un rectangle  amb seccions de colors
 	var r;
-	var myX = 0;
+	var myX = canvasSideExtraSize;
 	var lastY = 0;
+	actiuNoCorrentFirstY = 0;
 	var colorIdx = 0;
 	for(var i = 0; i < myAssetsPercent.notCurrent.length; i++){	
 		var val = myAssetsPercent.notCurrent[i].value;
@@ -361,7 +280,7 @@ function dibuixaSVGBS()
 			//Add text
 			var shortText = getShortenedVersion(text);
 			if(shortText.length){
-				doText(mySVG, myX, lastY, sectionHeight,
+				printSectionsText(mySVG, myX, lastY, sectionHeight,
 				shortText, val, myAssets.notCurrent[i].value);
 			}
 			//loop increments
@@ -369,13 +288,14 @@ function dibuixaSVGBS()
 			colorIdx++;
 		}
 	}
-	
+	actiuNoCorrentLastY = lastY;
 	//Draw line to separate non-current and current
 	doRect(mySVG, myX, lastY, columnWidth, 
 		lastY + liquidityLineSeparationWidth, "white");
 	lastY = lastY + liquidityLineSeparationWidth;
 	
 	//Draw the current stuff
+	actiuCorrentFirstY = lastY;
 	for(var i = 0; i < myAssetsPercent.current.length; i++){
 		var val = myAssetsPercent.current[i].value;
 		var text = myAssetsPercent.current[i].lineName;
@@ -392,7 +312,7 @@ function dibuixaSVGBS()
 			//Add text
 			var shortText = getShortenedVersion(text);
 			if(shortText.length){
-				doText(mySVG, myX, lastY, sectionHeight,
+				printSectionsText(mySVG, myX, lastY, sectionHeight,
 				shortText, val, myAssets.current[i].value);
 			}
 			//loop increments
@@ -400,15 +320,16 @@ function dibuixaSVGBS()
 			colorIdx++;
 		}
 	}		
-	
+	actiuCorrentLastY = lastY;
 	//Dibuixa els passius
 	//Calculate percentages
 	//Patrimoni net percentages
 	//Fes un rectangle  amb seccions de colors	
 	var availHeight = canvasHeight - liquidityLineSeparationWidth - 
 						patrimoniNetSeparationWidth;
-	myX = columnWidth + 2;
+	myX = canvasSideExtraSize + columnWidth + 2;
 	lastY = 0;
+	patrimoniNetFirstY = 0;
 	colorIdx = 0;
 	//Dibuixa el patrimoni net
 	for(var i = 0; i < myPassiuPercent.patrimoniNet.length; i++){
@@ -426,7 +347,7 @@ function dibuixaSVGBS()
 			//Add text
 			var shortText = getShortenedVersion(text);
 			if(shortText.length){
-				doText(mySVG, myX, lastY, sectionHeight,
+				printSectionsText(mySVG, myX, lastY, sectionHeight,
 				shortText, val, myPassiu.patrimoniNet[i].value);
 			}
 			//loop increments
@@ -434,13 +355,14 @@ function dibuixaSVGBS()
 			colorIdx++;
 		}
 	}
-	
+	patrimoniNetLastY = lastY;
 	//Draw line to separate el patrimoni net
 	doRect(mySVG, myX, lastY, columnWidth, 
 		lastY + patrimoniNetSeparationWidth, "white");
 	lastY = lastY + patrimoniNetSeparationWidth;	
 
 	//Dibuixa el passiu no corrent
+	passiuNoCorrentFirstY = lastY;
 	for(var i = 0; i < myPassiuPercent.noCorrent.length; i++){
 		var text = myPassiuPercent.noCorrent[i].lineName;
 		var val = myPassiuPercent.noCorrent[i].value;
@@ -457,7 +379,7 @@ function dibuixaSVGBS()
 			//Add text
 			var shortText = getShortenedVersion(text);
 			if(shortText.length){
-				doText(mySVG, myX, lastY, sectionHeight,
+				printSectionsText(mySVG, myX, lastY, sectionHeight,
 				shortText, val, myPassiu.noCorrent[i].value);
 			}
 			//loop increments
@@ -465,13 +387,14 @@ function dibuixaSVGBS()
 			colorIdx++;
 		}
 	}
-	
+	passiuNoCorrentLastY = lastY;
 	//Draw line to separate non-current and current
 	doRect(mySVG, myX, lastY, columnWidth, 
 		lastY + liquidityLineSeparationWidth, "white");
 	lastY = lastY + liquidityLineSeparationWidth;	
 
 	//Dibuixa el passiu  corrent
+	passiuCorrentFirstY = lastY;
 	for(var i = 0; i < myPassiuPercent.corrent.length; i++){
 		var val = myPassiuPercent.corrent[i].value;
 		var text = myPassiuPercent.corrent[i].lineName;
@@ -487,7 +410,7 @@ function dibuixaSVGBS()
 			//Add text
 			var shortText = getShortenedVersion(text);
 			if(shortText.length){
-				doText(mySVG, myX, lastY, sectionHeight,
+				printSectionsText(mySVG, myX, lastY, sectionHeight,
 				shortText, val, myPassiu.corrent[i].value);
 			}
 			//loop increments
@@ -495,6 +418,9 @@ function dibuixaSVGBS()
 			colorIdx++;
 		}
 	}	
+	passiuCorrentLastY = lastY;
+	drawAllBraces(mySVG);
+	printAgregatedAmounts(mySVG);
 	
 }
 
@@ -505,6 +431,7 @@ function doRect(mySVG, x, y, width, height, fill,
 	var r = document.createElementNS(
 		"http://www.w3.org/2000/svg",
 	 	"rect");
+	r.setAttribute("class", "BSSection");
 	r.setAttribute("x", x);
 	r.setAttribute("y", y);
 	r.setAttribute("width", width);
@@ -640,19 +567,22 @@ function getShortenedVersion(inText)
 	var myShorts = ["inmovilizado", "intangible", "existencias",
 					"clientes", "financieros", "efectivo",
 					"capital", "prima", "deuda", "proveedores" ];
+	var myShortsCat =["Immobilitzat", "Intangible", "Existències",
+					  "Clients", "Financers", "Efectiu",
+					  "Capital", "Prima", "Deute", "Proveïdors"];
 					
 	for(var i = 0; i < myShorts.length; i++){
 		if(tmpText.search(myShorts[i]) != -1){
-			console.log("shortened: " + myShorts[i]);
-			return myShorts[i];
+			console.log("shortened: " + myShortsCat[i]);
+			return myShortsCat[i];
 		}
 	}
 	return emptyText;
 }
 
-function doText(mySVG, x, y, sectionHeight, text, text2, text3)
+function printSectionsText(mySVG, x, y, sectionHeight, text, text2, text3)
 {
-	var fontSize = 20; 	
+	var fontSize = 15; 	
 	var font2Size = 15;
 	var font2Margin = 5;
 	if(sectionHeight < fontSize){
@@ -702,4 +632,218 @@ function doText(mySVG, x, y, sectionHeight, text, text2, text3)
 
 }
 
+function drawAllBraces(mySVG)
+{
+	drawOpeningCurlyBrace(mySVG, 
+		canvasSideExtraSize,
+		actiuNoCorrentFirstY, 
+		canvasSideExtraSize, 
+		actiuNoCorrentLastY);
+	drawOpeningCurlyBrace(mySVG, 
+		canvasSideExtraSize,
+		actiuCorrentFirstY, 
+		canvasSideExtraSize, 
+		actiuCorrentLastY);
+	drawClosingCurlyBrace(mySVG, 
+		canvasSideExtraSize + canvasWidth,
+		patrimoniNetFirstY, 
+		canvasSideExtraSize + canvasWidth, 
+		patrimoniNetLastY);
+	drawClosingCurlyBrace(mySVG, 
+		canvasSideExtraSize + canvasWidth,
+		passiuNoCorrentFirstY, 
+		canvasSideExtraSize + canvasWidth, 
+		passiuNoCorrentLastY);
+	drawClosingCurlyBrace(mySVG, 
+		canvasSideExtraSize + canvasWidth,
+		passiuCorrentFirstY, 
+		canvasSideExtraSize + canvasWidth, 
+		passiuCorrentLastY);
+
+}
+
+function drawOpeningCurlyBrace(mySVG, startX, startY, endX, endY)
+{
+	var cp1X, cp1Y;
+	var cp2X, cp2Y;
+	var len = endY - startY;
+	var halfLen = len / 2;
+	var middleX;
+	var middleY;
+	
+	middleX = startX - halfLen / 12;
+	middleY = startY + halfLen;
+	
+	cp1X = startX - halfLen / 5;
+	cp1Y = startY + halfLen / 7;
+	cp2X = middleX + halfLen / 5;
+	cp2Y = middleY - halfLen / 7; 
+	
+	var t = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"path");
+	var data = "M " + startX + " " + startY + " " + 
+				"C" + " " +  cp1X + " " + cp1Y + 
+				" " + cp2X + " " + cp2Y + " " 
+				+ middleX + " " + middleY;  	
+	t.setAttribute("d", data);
+	t.setAttribute("stroke", "blue");
+	t.setAttribute("stroke-width", 2);
+	t.setAttribute("fill", "none");
+	t.setAttribute("pointer-events", "none"); //click passthrough
+	mySVG.appendChild(t);	
+
+	cp1X = middleX + halfLen / 5;
+	cp1Y = middleY + halfLen / 7;
+	cp2X = endX - halfLen / 5;
+	cp2Y = endY - halfLen / 7; 
+
+	t = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"path");
+	data = "M " + middleX + " " + middleY + " " + 
+				"C" + " " +  cp1X + " " + cp1Y + 
+				" " + cp2X + " " + cp2Y + " " 
+				+ endX + " " + endY;  	
+	t.setAttribute("d", data);
+	t.setAttribute("stroke", "blue");
+	t.setAttribute("stroke-width", 2);
+	t.setAttribute("fill", "none");
+	t.setAttribute("pointer-events", "none"); //click passthrough
+	mySVG.appendChild(t);	
+
+}
+
+function drawClosingCurlyBrace(mySVG, startX, startY, endX, endY)
+{
+	var cp1X, cp1Y;
+	var cp2X, cp2Y;
+	var len = endY - startY;
+	var halfLen = len / 2;
+	var middleX;
+	var middleY;
+	
+	middleX = startX + halfLen / 12;
+	middleY = startY + halfLen;
+	
+	//Que el text no solapi la punxa del brace
+	if(middleX > closingBraceMaxX){
+		closingBraceMaxX = middleX;
+	}
+	
+	cp1X = startX + halfLen / 5;
+	cp1Y = startY + halfLen / 7;
+	cp2X = middleX - halfLen / 5;
+	cp2Y = middleY - halfLen / 7; 
+	
+	var t = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"path");
+	var data = "M " + startX + " " + startY + " " + 
+				"C" + " " +  cp1X + " " + cp1Y + 
+				" " + cp2X + " " + cp2Y + " " 
+				+ middleX + " " + middleY;  	
+	t.setAttribute("d", data);
+	t.setAttribute("stroke", "blue");
+	t.setAttribute("stroke-width", 2);
+	t.setAttribute("fill", "none");
+	t.setAttribute("pointer-events", "none"); //click passthrough
+	mySVG.appendChild(t);	
+
+	cp1X = middleX - halfLen / 5;
+	cp1Y = middleY + halfLen / 7;
+	cp2X = endX + halfLen / 5;
+	cp2Y = endY - halfLen / 7; 
+
+	t = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"path");
+	data = "M " + middleX + " " + middleY + " " + 
+				"C" + " " +  cp1X + " " + cp1Y + 
+				" " + cp2X + " " + cp2Y + " " 
+				+ endX + " " + endY;  	
+	t.setAttribute("d", data);
+	t.setAttribute("stroke", "blue");
+	t.setAttribute("stroke-width", 2);
+	t.setAttribute("fill", "none");
+	t.setAttribute("pointer-events", "none"); //click passthrough
+	mySVG.appendChild(t);	
+}
+
+function printAgregatedAmounts(mySVG)
+{
+	//Actiu no corrent
+	var x, y, value;
+	var fontSize = 15; 	
+	var fontMargin = 5;
+	x = fontMargin;
+	y = (actiuNoCorrentLastY - actiuNoCorrentFirstY) / 2;
+	val = accounting.formatMoney(
+					totalActiuNoCorrent.toString(),
+					 "", 0, ".", ",");
+	printSVGText(mySVG, x, y, "ANC", fontSize);
+	printSVGText(mySVG, x, y + fontSize, val, fontSize);
+	
+	//Actiu corrent
+	x = fontMargin;
+	y = actiuCorrentLastY - 
+		(actiuCorrentLastY - actiuCorrentFirstY) / 2;
+	val = accounting.formatMoney(
+					totalActiuCorrent.toString(),
+					 "", 0, ".", ",");
+	printSVGText(mySVG, x, y, "AC", fontSize);
+	printSVGText(mySVG, x, y + fontSize, val, fontSize);
+					
+	//Patrimoni Net
+	x = closingBraceMaxX + fontMargin;
+	y = (patrimoniNetLastY - patrimoniNetFirstY) / 2;
+	val = accounting.formatMoney(
+					totalPatrimoniNet.toString(),
+					 "", 0, ".", ",");
+	printSVGText(mySVG, x, y, "PN", fontSize);
+	printSVGText(mySVG, x, y + fontSize, val, fontSize);
+
+	//Passiu no corrent
+	x = closingBraceMaxX + fontMargin;
+	y = passiuNoCorrentFirstY + 
+		(passiuNoCorrentLastY - passiuNoCorrentFirstY) / 2;
+	val = accounting.formatMoney(
+					totalPassiuNoCorrent.toString(),
+					 "", 0, ".", ",");
+	printSVGText(mySVG, x, y, "PNC", fontSize);
+	printSVGText(mySVG, x, y + fontSize, val, fontSize);
+
+	//Passiu corrent
+	x = closingBraceMaxX + fontMargin;
+	y = passiuCorrentFirstY + 
+		(passiuCorrentLastY - passiuCorrentFirstY) / 2;
+	val = accounting.formatMoney(
+					totalPassiuCorrent.toString(),
+					 "", 0, ".", ",");
+	printSVGText(mySVG, x, y, "PC", fontSize);
+	printSVGText(mySVG, x, y + fontSize, val, fontSize);
+	
+	//Passiu = Actiu = numero
+	x = canvasSideExtraSize + fontSize;
+	y = canvasHeight + fontSize;
+	val = accounting.formatMoney(
+					totalAssets.toString(),
+					 "", 0, ".", ",");
+	var val2 = "Passiu = Actiu = " + val;
+	printSVGText(mySVG, x, y, val2, fontSize);
+}
+
+function printSVGText(mySVG, x, y, str, fontSize)
+{
+	var t = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"text");
+	t.setAttribute("x",x);
+	t.setAttribute("y", y);
+	t.setAttribute("font-size", fontSize);
+	t.setAttribute("fill", "black");
+	t.setAttribute("pointer-events", "none"); //click passthrough
+	t.textContent = str;
+	mySVG.appendChild(t);	
+}
 
