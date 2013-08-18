@@ -464,7 +464,7 @@ function onclick_actiuNoCorrent(obj)
 	percent = accounting.formatMoney(percent, "", 1, ".", ",");
 	console.log( val2 + " " + percent + "%");
 	displaySectionInfo(txt, val2, percent + "%");
-	getShortenedVersion(txt);
+	//getShortenedVersion(txt);
 }
 function onclick_actiuCorrent(obj)
 {
@@ -480,7 +480,7 @@ function onclick_actiuCorrent(obj)
 	percent = accounting.formatMoney(percent, "", 1, ".", ",");
 	console.log( val2 + " " + percent + "%");
 	displaySectionInfo(txt, val2, percent + "%");
-	getShortenedVersion(txt);
+	//getShortenedVersion(txt);
 }
 function onclick_patrimoniNet(obj)
 {
@@ -496,7 +496,7 @@ function onclick_patrimoniNet(obj)
 	percent = accounting.formatMoney(percent, "", 1, ".", ",");
 	console.log( val2 + " " + percent + "%");
 	displaySectionInfo(txt, val2, percent + "%");
-	getShortenedVersion(txt);
+	//getShortenedVersion(txt);
 }
 function onclick_passiuNoCorrent(obj)
 {
@@ -512,7 +512,7 @@ function onclick_passiuNoCorrent(obj)
 	percent = accounting.formatMoney(percent, "", 1, ".", ",");
 	console.log( val2 + " " + percent + "%");
 	displaySectionInfo(txt, val2, percent + "%");
-	getShortenedVersion(txt);
+	//getShortenedVersion(txt);
 }
 function onclick_passiuCorrent(obj)
 {
@@ -528,7 +528,7 @@ function onclick_passiuCorrent(obj)
 	percent = accounting.formatMoney(percent, "", 1, ".", ",");
 	console.log( val2 + " " + percent + "%");
 	displaySectionInfo(txt, val2, percent + "%");
-	getShortenedVersion(txt);
+	//getShortenedVersion(txt);
 }
 
 function displaySectionInfo(text, value, percentage)
