@@ -1,3 +1,6 @@
+
+
+
 var beneficiNet = 0;
 
 var colorCodes = new Array;
@@ -125,6 +128,7 @@ function dibuixaCR()
 	var canvasWidth =  242;
 	var columnWidth = (canvasWidth)/2;
 	var canvasBottomExtraSize = 30;
+	var canvasTopExtraSize = 30;
 	var canvasSideExtraSize = 70;
 	var colorIdx = 0;
 	
@@ -136,45 +140,67 @@ function dibuixaCR()
 	mySVG.setAttribute("baseProfile", "tiny");
 	var aux = canvasWidth + 2 * canvasSideExtraSize;
 	mySVG.setAttribute("width", aux + "px");
-	aux = canvasHeight + canvasBottomExtraSize;
+	aux = canvasHeight + canvasTopExtraSize + canvasBottomExtraSize;
 	mySVG.setAttribute("height", aux + "px");
 	container.appendChild(mySVG);
 	
 	var myX = canvasSideExtraSize + columnWidth + 2;
 	var myY = 0;
 	var lastY = 0;
-	var sectionHeight = (ingressosNormals / ingressosTotals) * canvasHeight;
+	var perU = (ingressosNormals / ingressosTotals);
+	var perCent = perU * 100;
+	var sectionHeight = perU * canvasHeight;
 	var fill = colorCodes[colorIdx % colorCodes.length];
 	
 	var customData1 = "notused";
 	var customData2 = 0;
 	var myCallback = "onclick_ingressos(this)";
 
+	//Fes titol ingressos
+	printSectionsText(mySVG, myX, lastY, canvasTopExtraSize, 
+		"Ingressos");		
+
+	lastY = canvasTopExtraSize;
 	//Fes una columna de ingressos
 	doRect(mySVG, myX, lastY, columnWidth, 
 		sectionHeight, fill,
 		customData1, customData2, myCallback);
 		
+	printSectionsText(mySVG, myX, lastY, sectionHeight, 
+		"Ingressos", perCent, ingressosNormals);		
+		
 	lastY = lastY + sectionHeight;
 	
 	//Fes una seccio d'altres ingressos
 	colorIdx++;
-	var sectionHeight = (altresIngressos / ingressosTotals) * canvasHeight;
-	var fill = colorCodes[colorIdx % colorCodes.length];
+	perU = (altresIngressos / ingressosTotals);
+	perCent = perU * 100;
+	sectionHeight =  perU * canvasHeight;
+	fill = colorCodes[colorIdx % colorCodes.length];
 	customData2 = 1;
-	var myCallback = "onclick_ingressos(this)";
+	myCallback = "onclick_ingressos(this)";
 	myX = myX; //no canvia
 	
 	doRect(mySVG, myX, lastY, columnWidth, 
 		sectionHeight, fill,
 		customData1, customData2, myCallback);
 
+	printSectionsText(mySVG, myX, lastY, sectionHeight, 
+		"Altres ingressos", perCent, altresIngressos);		
+
 	lastY = lastY + sectionHeight;	
 	
+	//Fes titol despeses
+	myX = canvasSideExtraSize; 
+	
+	printSectionsText(mySVG, myX, 0, canvasTopExtraSize, 
+	"Despeses");		
+	
+	lastY = canvasTopExtraSize;
+
 	//Dibuixa els gastos
 	myCallback = "onclick_gastos(this)";
 	colorIdx = 0;
-	lastY = 0;
 	for(var i = 0; i < CR.length; i++){
 		//console.log("i " + i);
 		if(i >= CR.length ){
@@ -189,13 +215,24 @@ function dibuixaCR()
 		}
 		console.log("Gasto " + CR[i].value);
 		//Dibuixa aquest gasto
-		var sectionHeight = ((-1 * CR[i].value) / ingressosTotals) * canvasHeight;
-		var fill = colorCodes[colorIdx % colorCodes.length];
+		var aux = -1 * CR[i].value; 
+		perU = aux / ingressosTotals;
+		perCent = perU * 100;
+		sectionHeight = perU * canvasHeight;
+		fill = colorCodes[colorIdx % colorCodes.length];
 		customData2 = i;
-		myX = canvasSideExtraSize; 
+		
 		doRect(mySVG, myX, lastY, columnWidth, 
 			sectionHeight, fill,
 			customData1, customData2, myCallback);
+			
+		var shortText = getShortenedVersion(CR[i].lineName);
+		
+		if(shortText.length){
+			printSectionsText(mySVG, myX, lastY, sectionHeight, 
+				shortText, perCent, aux);
+			}		
+			
 		lastY = lastY + sectionHeight;
 		colorIdx++;
 	}	
@@ -333,3 +370,84 @@ function displaySectionInfo(text, value, percentage)
 	para.textContent = value;
 	container.appendChild(para);	
 }
+
+function printSectionsText(mySVG, x, y, sectionHeight, text,
+		 percentText, amountText)
+{
+	var fontSize = 15; 	
+	var font2Size = 15;
+	var font2Margin = 5;
+	if(sectionHeight < fontSize){
+		return;
+	}
+	var t = document.createElementNS(
+		"http://www.w3.org/2000/svg",
+	 	"text");
+	t.setAttribute("x", x + fontSize);
+	t.setAttribute("y", y + fontSize);
+	t.setAttribute("font-size", fontSize);
+	t.setAttribute("fill", "black");
+	t.setAttribute("pointer-events", "none"); //click passthrough
+	t.textContent = text;
+	mySVG.appendChild(t);	
+	if(percentText != null){
+		//Add the percent
+		if(sectionHeight < (fontSize + font2Size + font2Margin) ){
+			return;
+		}
+		var v = document.createElementNS(
+			"http://www.w3.org/2000/svg",
+		 	"text");
+		v.setAttribute("x", x + fontSize);
+		v.setAttribute("y", y + fontSize + font2Size + font2Margin);
+		v.setAttribute("font-size", font2Size);
+		v.setAttribute("fill", "black");
+		v.setAttribute("pointer-events", "none"); //click passthrough
+		var percentVal = accounting.formatMoney(percentText, "", 1,
+						 ".", ",");
+		v.textContent = percentVal + "%";
+		mySVG.appendChild(v);	
+	}
+	if(amountText != null){
+		//Add the value
+		if(sectionHeight < (fontSize + 2 * font2Size + 2 * font2Margin) ){
+			return;
+		}
+		var w = document.createElementNS(
+			"http://www.w3.org/2000/svg",
+		 	"text");
+		w.setAttribute("x", x + fontSize);
+		w.setAttribute("y", y + fontSize + 2 * font2Size + font2Margin);
+		w.setAttribute("font-size", font2Size);
+		w.setAttribute("fill", "black");
+		w.setAttribute("pointer-events", "none"); //click passthrough
+		var currencyVal = accounting.formatMoney(amountText, "", 0,
+						 ".", ",");
+		w.textContent = currencyVal;
+		mySVG.appendChild(w);	
+	}
+
+}
+
+function getShortenedVersion(inText)
+{
+	var emptyText = "";
+	var tmpText = inText.toLowerCase();
+	var myShorts = ["consum", "personal", "amortización",
+					"otros", "financieros", "cambio",
+					"enajenaciones", "impuestos"];
+					
+	var myShortsCat =["consum", "personal", "amortització",
+					  "altres", "financers", "canvi divises",
+					  "enajenaciones", "impostos"];
+					
+	for(var i = 0; i < myShorts.length; i++){
+		if(tmpText.search(myShorts[i]) != -1){
+			console.log("shortened: " + myShortsCat[i]);
+			return myShortsCat[i];
+		}
+	}
+	return emptyText;
+}
+
+
