@@ -1,13 +1,14 @@
 var CRE = {
 	beneficiNet: 0,
-	colorCodes: [],
-	property: "1",
-	property2: null,
 	CR: [],
 	resultatFinal: 0,
 	ingressosNormals: 0,
 	ingressosNormalsIdx: 0,
 	ingressosTotals: 0,
+	
+	columnWidth: 0,
+	columnHeight: 0,
+	canvasTopEmptySpace: 0,
 	
 //Functions
 	init: null,
@@ -16,7 +17,6 @@ var CRE = {
 	calcResultatFinal: null,
 	pickIngressosNormals: null,
 	calcAltresIngressos: null,
-	doRect: null,
 	doRect: null,
 	removeHighLight: null,
 	displaySectionInfo: null,
@@ -64,18 +64,9 @@ CRE.fillCRLines = function(){
 	this.CR.push(this.doCRLine("RESULTADO DEL EJERCICIO", 0, true, false));
 }
 
-CRE.init = function(){
+CRE.init = function()
+{
 
-	this.colorCodes.push("#00BB3F");
-	this.colorCodes.push("#00A287");
-	this.colorCodes.push("#1240AB");
-	this.colorCodes.push("#4671D5");
-	this.colorCodes.push("#6C8CD5");
-	this.colorCodes.push("#06266F");
-	this.colorCodes.push("#0776A0"); 
-	this.colorCodes.push("#4711AE"); 
-	this.colorCodes.push("#8805A8"); 
-	
 	this.fillCRLines();
 	this.resultatFinal = this.calcResultatFinal();
 	this.beneficiNet = this.resultatFinal;
@@ -84,6 +75,8 @@ CRE.init = function(){
 	this.ingressosNormalsIdx = aux[1];
 	this.altresIngressos = this.calcAltresIngressos();
 	this.ingressosTotals = this.ingressosNormals + this.altresIngressos;
+	
+	
 } 
 
 CRE.calcResultatFinal = function()
@@ -324,9 +317,9 @@ CRE.getShortenedVersion = function(inText)
 					"otros", "financieros", "cambio",
 					"enajenaciones", "impuestos"];
 					
-	var myShortsCat =["consum", "personal", "amortització",
-					  "altres", "financers", "canvi divises",
-					  "enajenaciones", "impostos"];
+	var myShortsCat =["Consum", "Personal", "Amortització",
+					  "Altres", "Financers", "Canvi divises",
+					  "Enajenaciones", "Impostos"];
 					
 	for(var i = 0; i < myShorts.length; i++){
 		if(tmpText.search(myShorts[i]) != -1){
@@ -341,12 +334,17 @@ CRE.getShortenedVersion = function(inText)
 CRE.dibuixaCR = function()
 {
 	console.log("dibuixaCR()");
-	var canvasHeight = 450;
-	var canvasWidth =  242;
-	var columnWidth = (canvasWidth)/2;
-	var canvasBottomExtraSize = 30;
-	var canvasTopExtraSize = 30;
-	var canvasSideExtraSize = 70;
+		
+	this.columnWidth = (FSCommon.canvasWidth - 
+						FSCommon.columnSeparationSize -
+						2 * FSCommon.canvasSideExtraSize) / 2;
+	
+	this.columnHeight = FSCommon.canvasHeight - 
+						FSCommon.canvasBottomTextSpace -
+						FSCommon.canvasTopTextSpace;
+						
+	this.canvasTopEmptySpace = 0;
+						
 	var colorIdx = 0;
 	
 	//Crea un element svg
@@ -355,31 +353,30 @@ CRE.dibuixaCR = function()
 	 "svg");
 	mySVG.setAttribute("version", "1.2");
 	mySVG.setAttribute("baseProfile", "tiny");
-	var aux = canvasWidth + 2 * canvasSideExtraSize;
+	var aux = FSCommon.canvasWidth;
 	mySVG.setAttribute("width", aux + "px");
-	aux = canvasHeight + canvasTopExtraSize + canvasBottomExtraSize;
+	aux = FSCommon.canvasHeight;
 	mySVG.setAttribute("height", aux + "px");
 	container.appendChild(mySVG);
 	
-	var myX = canvasSideExtraSize + columnWidth + 2;
-	var myY = 0;
-	var lastY = 0;
+	var myX = this.columnWidth + FSCommon.columnSeparationSize;
+	var myY = FSCommon.canvasTopTextSpace + this.canvasTopEmptySpace;
+	var lastY = myY;
 	var perU = (this.ingressosNormals / this.ingressosTotals);
 	var perCent = perU * 100;
-	var sectionHeight = perU * canvasHeight;
-	var fill = this.colorCodes[colorIdx % this.colorCodes.length];
+	var sectionHeight = perU * this.columnHeight;
+	var fill = FSCommon.colorCodes[colorIdx % FSCommon.colorCodes.length];
 	
 	var customData1 = "notused";
 	var customData2 = 0;
 	var myCallback = "CRE.onclick_ingressos(this)";
 
 	//Fes titol ingressos
-	this.printSectionsText(mySVG, myX, lastY, canvasTopExtraSize, 
-		"Ingressos");		
+	//this.printSectionsText(mySVG, myX, lastY, this.canvasTopEmpySpace, 
+	//	"Ingressos");		
 
-	lastY = canvasTopExtraSize;
 	//Fes una columna de ingressos
-	this.doRect(mySVG, myX, lastY, columnWidth, 
+	this.doRect(mySVG, myX, lastY, this.columnWidth, 
 		sectionHeight, fill,
 		customData1, customData2, myCallback);
 		
@@ -392,13 +389,13 @@ CRE.dibuixaCR = function()
 	colorIdx++;
 	perU = (this.altresIngressos / this.ingressosTotals);
 	perCent = perU * 100;
-	sectionHeight =  perU * canvasHeight;
-	fill = this.colorCodes[colorIdx % this.colorCodes.length];
+	sectionHeight =  perU * this.columnHeight;
+	fill = FSCommon.colorCodes[colorIdx % FSCommon.colorCodes.length];
 	customData2 = 1;
 	myCallback = "CRE.onclick_ingressos(this)";
 	myX = myX; //no canvia
 	
-	this.doRect(mySVG, myX, lastY, columnWidth, 
+	this.doRect(mySVG, myX, lastY, this.columnWidth, 
 		sectionHeight, fill,
 		customData1, customData2, myCallback);
 
@@ -408,12 +405,12 @@ CRE.dibuixaCR = function()
 	lastY = lastY + sectionHeight;	
 	
 	//Fes titol despeses
-	myX = canvasSideExtraSize; 
+	myX = 0; 
 	
-	this.printSectionsText(mySVG, myX, 0, canvasTopExtraSize, 
-	"Despeses");		
+	//this.printSectionsText(mySVG, myX, 0, this.canvasTopEmpySpace, 
+	//"Despeses");		
 	
-	lastY = canvasTopExtraSize;
+	lastY = FSCommon.canvasTopTextSpace + this.canvasTopEmptySpace;
 
 	//Dibuixa els gastos
 	myCallback = "CRE.onclick_gastos(this)";
@@ -436,11 +433,11 @@ CRE.dibuixaCR = function()
 		var aux = -1 * CR[i].value; 
 		perU = aux / this.ingressosTotals;
 		perCent = perU * 100;
-		sectionHeight = perU * canvasHeight;
-		fill = this.colorCodes[colorIdx % this.colorCodes.length];
+		sectionHeight = perU * this.columnHeight;
+		fill = FSCommon.colorCodes[colorIdx % FSCommon.colorCodes.length];
 		customData2 = i;
 		
-		this.doRect(mySVG, myX, lastY, columnWidth, 
+		this.doRect(mySVG, myX, lastY, this.columnWidth, 
 			sectionHeight, fill,
 			customData1, customData2, myCallback);
 			
@@ -456,14 +453,36 @@ CRE.dibuixaCR = function()
 	}	
 	
 	//Fes una seccio de benefici net
-	var sectionHeight = (this.beneficiNet / this.ingressosTotals) * canvasHeight;
+	var sectionHeight = (this.beneficiNet / this.ingressosTotals) *
+						 this.columnHeight;
 	var fill = "red";
 	customData2 = CR.length - 1;
-	myX = canvasSideExtraSize; //no canvia
+	myX = 0; //no canvia
 	
-	this.doRect(mySVG, myX, lastY, columnWidth, 
+	this.doRect(mySVG, myX, lastY, this.columnWidth, 
 		sectionHeight, fill,
 		customData1, customData2, myCallback);
+		
+	//Draw closing curly brace
+	var startX = 2 * this.columnWidth + FSCommon.columnSeparationSize;
+	var startY =  FSCommon.canvasTopTextSpace + this.canvasTopEmptySpace;
+	var endX = startX;
+	var endY = startY + this.columnHeight;
+	var middleX;
+	middleX = FSCommon.drawClosingCurlyBrace(mySVG, startX,
+							 startY, endX, endY);
+	var fontMargin = 3;
+	var fontSize = 15;
+	startX = middleX + fontMargin;
+	startY = startY + (endY - startY) / 2;
+	var val = accounting.formatMoney(
+				this.ingressosTotals.toString(),
+				 "", 0, ".", ",");	
+	BS.printSVGText(mySVG, startX, startY, "Ingressos",
+			 fontSize);
+	BS.printSVGText(mySVG, startX, startY+ fontSize,
+				 val, fontSize);
+	
 }
 
-CRE.init();
+

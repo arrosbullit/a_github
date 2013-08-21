@@ -1,0 +1,20 @@
+#titol{
+	border: 1px solid black;
+	background-color: grey;
+	width: 500px;
+	margin: auto;
+}
+
+#nom_empresa{
+	width: 50%;
+	border: 1px solid blue;
+	background-color: yellow;
+	display: inline-block;
+	text-align: right;
+}
+
+#periode{
+	border: 1px solid red;
+	background-color: green;
+	display: inline-block;
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>none</title>
+<meta charset='utf-8'> 
+<link rel="stylesheet" type="text/css" href="j_dos_dibuixos_v2.css">
+<script src="accounting.js"></script>
+<script src="l_FS_common.js"></script>
+<script src="i_bs_encapsulated.js"></script>
+<script src="g_cr_encapsulated.js"></script>
+<script>
+function myInit2()
+{	
+	FSCommon.init();
+	BS.init();
+	CRE.init();
+	
+	
+	CRE.dibuixaCR();
+	BS.dibuixa();
+	
+}
+</script>
+</head>
+<body onload = "myInit2()">
+<div id = "tot">
+	<div id = "titol">
+		<div id = "nom_empresa" >
+		Nom Empresa
+		</div>	
+		<div id ="periode" >
+		Primer semestre 2013
+		</div>
+	</div>
+
+	<div id = "BS">
+	<div id="BSSVGContainer"></div>
+	<div id="BSSectionInfo"></div>
+	</div>
+
+	<div id = "CR">
+	<div id="CRSVGContainer"></div>
+	<div id="CRSectionInfo"></div>
+	</div>
+</div>
+</body>
+</html>

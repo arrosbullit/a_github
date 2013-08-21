@@ -5,6 +5,10 @@ var BS = {
 	totalActiuCorrent: 0,
 	totalActiuNoCorrent: 0,
 	
+	columnWidth: 0,
+	columnHeight: 0,
+	
+	
 	//Vars per dibuixar els curly braces
 	actiuNoCorrentFirstY: 0,
 	actiuNoCorrentLastY: 0,
@@ -28,15 +32,6 @@ var BS = {
 	patrimoniNetSeparationWidth: 2,
 	passiveLineSeparationWidth: 2,
 	
-	canvasHeight: 450,
-	canvasWidth: 242,
-	columnWidth: 0,
-	canvasBottomExtraSize: 30,
-	canvasTopExtraSize: 30,
-	canvasSideExtraSize: 70,
-	
-	colorCodes: [],
-	
 	totalAssets: 0,
 	totalActiuNoCorrent: 0,
 	
@@ -54,19 +49,9 @@ var BS = {
 	{
 		console.log("BS.init()");
 		
-		this.columnWidth = (this.canvasWidth -
+		this.columnWidth = (FSCommon.canvasWidth -
+			2 * FSCommon.canvasSideExtraSize -
 			this.passiveLineSeparationWidth)/2; 
-		
-		this.colorCodes.push("#00BB3F");
-		this.colorCodes.push("#00A287");
-		this.colorCodes.push("#1240AB");
-		this.colorCodes.push("#4671D5");
-		this.colorCodes.push("#6C8CD5");
-		this.colorCodes.push("#06266F");
-		this.colorCodes.push("#0776A0"); 
-		this.colorCodes.push("#4711AE"); 
-		this.colorCodes.push("#8805A8"); 
-		
 		this.fillBS();
 		this.calcSumes();
 
@@ -190,39 +175,48 @@ var BS = {
 		 "svg");
 		mySVG.setAttribute("version", "1.2");
 		mySVG.setAttribute("baseProfile", "tiny");
-		var aux = this.canvasWidth + 2 * this.canvasSideExtraSize;
+		var aux = FSCommon.canvasWidth;
 		mySVG.setAttribute("width", aux + "px");
-		aux = this.canvasHeight + this.canvasTopExtraSize + this.canvasBottomExtraSize;
+		aux = FSCommon.canvasHeight;
 		mySVG.setAttribute("height", aux + "px");
 		container.appendChild(mySVG);
-	
+		
+		this.columnHeight = FSCommon.canvasHeight - 
+							FSCommon.canvasTopTextSpace -
+							FSCommon.canvasBottomTextSpace;
+		
+		
 		//Fes un rectangle  amb seccions de colors
-		var myX = this.canvasSideExtraSize;
-		var lastY = 0;
-		this.actiuNoCorrentFirstY = 0;
+		var myX = FSCommon.canvasSideExtraSize;
+		var lastY = FSCommon.canvasTopTextSpace;
+		this.actiuNoCorrentFirstY = lastY;
 		var colorIdx = 0;
 		for(var i = 0; i < this.notCurrent.length; i++){	
 			var val = 100 * (this.notCurrent[i].value / this.totalAssets);
 			var text = this.notCurrent[i].lineName;
 			if(val != 0 && isNaN(val) == false){
 				var sectionHeight = (val / 100) * 
-					(this.canvasHeight - this.liquidityLineSeparationWidth);
-				var fill = this.colorCodes[colorIdx % this.colorCodes.length];
-				var customData1 = "notused";
-				var customData2 = i;
-				var myCallback = "BS.onclick_actiuNoCorrent(this)";
-				this.doRect(mySVG, myX, lastY, this.columnWidth, 
-					sectionHeight, fill,
-					customData1, customData2, myCallback);
-				//Add text
-				var shortText = this.getShortenedVersion(text);
-				if(shortText.length){
-					this.printSectionsText(mySVG, myX, lastY, sectionHeight,
-						shortText, val, this.notCurrent[i].value);
+					(this.columnHeight -
+					 this.liquidityLineSeparationWidth);
+				if(sectionHeight >= 1){
+					var fill = FSCommon.colorCodes[colorIdx %
+						 FSCommon.colorCodes.length];
+					var customData1 = "notused";
+					var customData2 = i;
+					var myCallback = "BS.onclick_actiuNoCorrent(this)";
+					this.doRect(mySVG, myX, lastY, this.columnWidth, 
+						sectionHeight, fill,
+						customData1, customData2, myCallback);
+					//Add text
+					var shortText = this.getShortenedVersion(text);
+					if(shortText.length){
+						this.printSectionsText(mySVG, myX, lastY, sectionHeight,
+							shortText, val, this.notCurrent[i].value);
+					}
+					//loop increments
+					lastY = lastY + sectionHeight;
+					colorIdx++;
 				}
-				//loop increments
-				lastY = lastY + sectionHeight;
-				colorIdx++;
 			}
 		}
 		this.actiuNoCorrentLastY = lastY;
@@ -238,23 +232,26 @@ var BS = {
 			var text = this.current[i].lineName;
 			if(val != 0 && isNaN(val) == false){
 				var sectionHeight = (val / 100) * 
-					(this.canvasHeight - this.liquidityLineSeparationWidth);
-				var fill = this.colorCodes[colorIdx % this.colorCodes.length];
-				var customData1 = "notused";
-				var customData2 = i;
-				var myCallback = "BS.onclick_actiuCorrent(this)";
-				this.doRect(mySVG, myX, lastY, this.columnWidth, 
-					sectionHeight, fill,
-					customData1, customData2, myCallback);
-				//Add text
-				var shortText = this.getShortenedVersion(text);
-				if(shortText.length){
-					this.printSectionsText(mySVG, myX, lastY, sectionHeight,
-						shortText, val, this.current[i].value);
+					(this.columnHeight - 
+					this.liquidityLineSeparationWidth);
+				if(sectionHeight >= 1){
+					var fill = FSCommon.colorCodes[colorIdx % FSCommon.colorCodes.length];
+					var customData1 = "notused";
+					var customData2 = i;
+					var myCallback = "BS.onclick_actiuCorrent(this)";
+					this.doRect(mySVG, myX, lastY, this.columnWidth, 
+						sectionHeight, fill,
+						customData1, customData2, myCallback);
+					//Add text
+					var shortText = this.getShortenedVersion(text);
+					if(shortText.length){
+						this.printSectionsText(mySVG, myX, lastY, sectionHeight,
+							shortText, val, this.current[i].value);
+					}
+					//loop increments
+					lastY = lastY + sectionHeight;
+					colorIdx++;
 				}
-				//loop increments
-				lastY = lastY + sectionHeight;
-				colorIdx++;
 			}
 		}		
 		this.actiuCorrentLastY = lastY;
@@ -262,11 +259,13 @@ var BS = {
 		//Calculate percentages
 		//Patrimoni net percentages
 		//Fes un rectangle  amb seccions de colors	
-		var availHeight = this.canvasHeight - this.liquidityLineSeparationWidth - 
-							this.patrimoniNetSeparationWidth;
-		myX = this.canvasSideExtraSize + this.columnWidth + 2;
-		lastY = 0;
-		this.patrimoniNetFirstY = 0;
+		var availHeight = this.columnHeight -
+						  this.liquidityLineSeparationWidth - 
+						  this.patrimoniNetSeparationWidth;
+		myX = FSCommon.canvasSideExtraSize + this.columnWidth + 
+				FSCommon.columnSeparationSize;
+		lastY = FSCommon.canvasTopTextSpace;
+		this.patrimoniNetFirstY = lastY;
 		colorIdx = 0;
 		//Dibuixa el patrimoni net
 		for(var i = 0; i < this.patrimoniNet.length; i++){
@@ -274,22 +273,24 @@ var BS = {
 			var text = this.patrimoniNet[i].lineName;
 			if(val != 0 && isNaN(val) == false){
 				var sectionHeight = (val / 100) * availHeight;
-				var fill = this.colorCodes[colorIdx % this.colorCodes.length];
-				var customData1 = "notused";
-				var customData2 = i;
-				var myCallback = "BS.onclick_patrimoniNet(this)";
-				this.doRect(mySVG, myX, lastY, this.columnWidth, 
-					sectionHeight, fill,
-					customData1, customData2, myCallback);
-				//Add text
-				var shortText = this.getShortenedVersion(text);
-				if(shortText.length){
-					this.printSectionsText(mySVG, myX, lastY, sectionHeight,
-						shortText, val, this.patrimoniNet[i].value);
+				if(sectionHeight >= 1){
+					var fill = FSCommon.colorCodes[colorIdx % FSCommon.colorCodes.length];
+					var customData1 = "notused";
+					var customData2 = i;
+					var myCallback = "BS.onclick_patrimoniNet(this)";
+					this.doRect(mySVG, myX, lastY, this.columnWidth, 
+						sectionHeight, fill,
+						customData1, customData2, myCallback);
+					//Add text
+					var shortText = this.getShortenedVersion(text);
+					if(shortText.length){
+						this.printSectionsText(mySVG, myX, lastY, sectionHeight,
+							shortText, val, this.patrimoniNet[i].value);
+					}
+					//loop increments
+					lastY = lastY + sectionHeight;
+					colorIdx++;
 				}
-				//loop increments
-				lastY = lastY + sectionHeight;
-				colorIdx++;
 			}
 		}
 		this.patrimoniNetLastY = lastY;
@@ -306,22 +307,24 @@ var BS = {
 			//console.log("passiu no corrent" + val);
 			if(val != 0 && isNaN(val) == false){
 				var sectionHeight = (val / 100) * availHeight;
-				var fill = this.colorCodes[colorIdx % this.colorCodes.length];
-				var customData1 = "notused";
-				var customData2 = i;
-				var myCallback = "BS.onclick_passiuNoCorrent(this)";
-				this.doRect(mySVG, myX, lastY, this.columnWidth, 
-					sectionHeight, fill,
-					customData1, customData2, myCallback);
-				//Add text
-				var shortText = this.getShortenedVersion(text);
-				if(shortText.length){
-					this.printSectionsText(mySVG, myX, lastY, sectionHeight,
-					shortText, val, this.passiuNoCorrent[i].value);
+				if(sectionHeight >= 1){
+					var fill = FSCommon.colorCodes[colorIdx % FSCommon.colorCodes.length];
+					var customData1 = "notused";
+					var customData2 = i;
+					var myCallback = "BS.onclick_passiuNoCorrent(this)";
+					this.doRect(mySVG, myX, lastY, this.columnWidth, 
+						sectionHeight, fill,
+						customData1, customData2, myCallback);
+					//Add text
+					var shortText = this.getShortenedVersion(text);
+					if(shortText.length){
+						this.printSectionsText(mySVG, myX, lastY, sectionHeight,
+						shortText, val, this.passiuNoCorrent[i].value);
+					}
+					//loop increments
+					lastY = lastY + sectionHeight;
+					colorIdx++;
 				}
-				//loop increments
-				lastY = lastY + sectionHeight;
-				colorIdx++;
 			}
 		}
 		this.passiuNoCorrentLastY = lastY;
@@ -337,22 +340,25 @@ var BS = {
 			var text = this.passiuCorrent[i].lineName;
 			if(val != 0 && isNaN(val) == false){
 				var sectionHeight = (val / 100) * availHeight;
-				var fill = this.colorCodes[colorIdx % this.colorCodes.length];
-				var customData1 = "notUsed";
-				var customData2 = i;
-				var myCallback = "BS.onclick_passiuCorrent(this)";
-				this.doRect(mySVG, myX, lastY, this.columnWidth, 
-					sectionHeight, fill,
-					customData1, customData2, myCallback);
-				//Add text
-				var shortText = this.getShortenedVersion(text);
-				if(shortText.length){
-					this.printSectionsText(mySVG, myX, lastY, sectionHeight,
-					shortText, val, this.passiuCorrent[i].value);
+				if(sectionHeight >= 1){
+					var fill = FSCommon.colorCodes[colorIdx % FSCommon.colorCodes.length];
+					//console.log("Color code " + colorIdx % FSCommon.colorCodes.length + " " + sectionHeight);
+					var customData1 = "notUsed";
+					var customData2 = i;
+					var myCallback = "BS.onclick_passiuCorrent(this)";
+					this.doRect(mySVG, myX, lastY, this.columnWidth, 
+						sectionHeight, fill,
+						customData1, customData2, myCallback);
+					//Add text
+					var shortText = this.getShortenedVersion(text);
+					if(shortText.length){
+						this.printSectionsText(mySVG, myX, lastY, sectionHeight,
+						shortText, val, this.passiuCorrent[i].value);
+					}
+					//loop increments
+					lastY = lastY + sectionHeight;
+					colorIdx++;
 				}
-				//loop increments
-				lastY = lastY + sectionHeight;
-				colorIdx++;
 			}
 		}	
 		this.passiuCorrentLastY = lastY;
@@ -469,7 +475,7 @@ var BS = {
 	
 	displaySectionInfo: function(text, value, percentage)
 	{
-	   var container = document.getElementById("sectionInfo");
+	   var container = document.getElementById("BSSectionInfo");
 	   
 	   //Remove all child nodes
 		while(container.hasChildNodes()){
@@ -488,7 +494,7 @@ var BS = {
 
 	removeHighlight: function()
 	{
-		var container = document.getElementById("svgContainer");
+		var container = document.getElementById("BSSVGContainer");
 		container = container.getElementsByTagName("svg");
 		var childs = container[0].childNodes;
 		for(var i = 0; i < childs.length; i++){
@@ -570,142 +576,61 @@ var BS = {
 
 	drawAllBraces: function(mySVG)
 	{
-		this.drawOpeningCurlyBrace(mySVG, 
-			this.canvasSideExtraSize,
+		FSCommon.drawOpeningCurlyBrace(mySVG, 
+			FSCommon.canvasSideExtraSize,
 			this.actiuNoCorrentFirstY, 
-			this.canvasSideExtraSize, 
+			FSCommon.canvasSideExtraSize, 
 			this.actiuNoCorrentLastY);
-		this.drawOpeningCurlyBrace(mySVG, 
-			this.canvasSideExtraSize,
+		FSCommon.drawOpeningCurlyBrace(mySVG, 
+			FSCommon.canvasSideExtraSize,
 			this.actiuCorrentFirstY, 
-			this.canvasSideExtraSize, 
+			FSCommon.canvasSideExtraSize, 
 			this.actiuCorrentLastY);
-		this.drawClosingCurlyBrace(mySVG, 
-			this.canvasSideExtraSize + this.canvasWidth,
-			this.patrimoniNetFirstY, 
-			this.canvasSideExtraSize + this.canvasWidth, 
-			this.patrimoniNetLastY);
+		
+		var myX = FSCommon.canvasSideExtraSize +
+				  2 * this.columnWidth + FSCommon.columnSeparationSize;
+		
+		this.closingBraceMaxX = 0;		  
+
 			
-		this.drawClosingCurlyBrace(mySVG, 
-			this.canvasSideExtraSize + this.canvasWidth,
-			this.passiuNoCorrentFirstY, 
-			this.canvasSideExtraSize + this.canvasWidth, 
-			this.passiuNoCorrentLastY);
-		this.drawClosingCurlyBrace(mySVG, 
-			this.canvasSideExtraSize + this.canvasWidth,
-			this.passiuCorrentFirstY, 
-			this.canvasSideExtraSize + this.canvasWidth, 
-			this.passiuCorrentLastY);
+		var middleX = FSCommon.drawClosingCurlyBrace(mySVG, 
+			myX,
+			this.patrimoniNetFirstY, 
+			myX, 
+			this.patrimoniNetLastY);
 
-	},
-
-	drawOpeningCurlyBrace: function(mySVG, startX, startY, endX, endY)
-	{
-		var cp1X, cp1Y;
-		var cp2X, cp2Y;
-		var len = endY - startY;
-		var halfLen = len / 2;
-		var middleX;
-		var middleY;
-	
-		middleX = startX - halfLen / 12;
-		middleY = startY + halfLen;
-	
-		cp1X = startX - halfLen / 5;
-		cp1Y = startY + halfLen / 7;
-		cp2X = middleX + halfLen / 5;
-		cp2Y = middleY - halfLen / 7; 
-	
-		var t = document.createElementNS(
-			"http://www.w3.org/2000/svg",
-		 	"path");
-		var data = "M " + startX + " " + startY + " " + 
-					"C" + " " +  cp1X + " " + cp1Y + 
-					" " + cp2X + " " + cp2Y + " " 
-					+ middleX + " " + middleY;  	
-		t.setAttribute("d", data);
-		t.setAttribute("stroke", "blue");
-		t.setAttribute("stroke-width", 2);
-		t.setAttribute("fill", "none");
-		t.setAttribute("pointer-events", "none"); //click passthrough
-		mySVG.appendChild(t);	
-
-		cp1X = middleX + halfLen / 5;
-		cp1Y = middleY + halfLen / 7;
-		cp2X = endX - halfLen / 5;
-		cp2Y = endY - halfLen / 7; 
-
-		t = document.createElementNS(
-			"http://www.w3.org/2000/svg",
-		 	"path");
-		data = "M " + middleX + " " + middleY + " " + 
-					"C" + " " +  cp1X + " " + cp1Y + 
-					" " + cp2X + " " + cp2Y + " " 
-					+ endX + " " + endY;  	
-		t.setAttribute("d", data);
-		t.setAttribute("stroke", "blue");
-		t.setAttribute("stroke-width", 2);
-		t.setAttribute("fill", "none");
-		t.setAttribute("pointer-events", "none"); //click passthrough
-		mySVG.appendChild(t);	
-
-	},
-
-	drawClosingCurlyBrace: function(mySVG, startX, startY, endX, endY)
-	{
-		var cp1X, cp1Y;
-		var cp2X, cp2Y;
-		var len = endY - startY;
-		var halfLen = len / 2;
-		var middleX;
-		var middleY;
-	
-		middleX = startX + halfLen / 12;
-		middleY = startY + halfLen;
-	
 		//Que el text no solapi la punxa del brace
 		if(middleX > this.closingBraceMaxX){
 			this.closingBraceMaxX = middleX;
 		}
-	
-		cp1X = startX + halfLen / 5;
-		cp1Y = startY + halfLen / 7;
-		cp2X = middleX - halfLen / 5;
-		cp2Y = middleY - halfLen / 7; 
-	
-		var t = document.createElementNS(
-			"http://www.w3.org/2000/svg",
-		 	"path");
-		var data = "M " + startX + " " + startY + " " + 
-					"C" + " " +  cp1X + " " + cp1Y + 
-					" " + cp2X + " " + cp2Y + " " 
-					+ middleX + " " + middleY;  	
-		t.setAttribute("d", data);
-		t.setAttribute("stroke", "blue");
-		t.setAttribute("stroke-width", 2);
-		t.setAttribute("fill", "none");
-		t.setAttribute("pointer-events", "none"); //click passthrough
-		mySVG.appendChild(t);	
 
-		cp1X = middleX - halfLen / 5;
-		cp1Y = middleY + halfLen / 7;
-		cp2X = endX + halfLen / 5;
-		cp2Y = endY - halfLen / 7; 
+			
+		middleX = FSCommon.drawClosingCurlyBrace(mySVG, 
+			myX,
+			this.passiuNoCorrentFirstY, 
+			myX, 
+			this.passiuNoCorrentLastY);
 
-		t = document.createElementNS(
-			"http://www.w3.org/2000/svg",
-		 	"path");
-		data = "M " + middleX + " " + middleY + " " + 
-					"C" + " " +  cp1X + " " + cp1Y + 
-					" " + cp2X + " " + cp2Y + " " 
-					+ endX + " " + endY;  	
-		t.setAttribute("d", data);
-		t.setAttribute("stroke", "blue");
-		t.setAttribute("stroke-width", 2);
-		t.setAttribute("fill", "none");
-		t.setAttribute("pointer-events", "none"); //click passthrough
-		mySVG.appendChild(t);	
+		//Que el text no solapi la punxa del brace
+		if(middleX > this.closingBraceMaxX){
+			this.closingBraceMaxX = middleX;
+		}
+
+
+		middleX = FSCommon.drawClosingCurlyBrace(mySVG, 
+			myX,
+			this.passiuCorrentFirstY, 
+			myX, 
+			this.passiuCorrentLastY);
+
+		//Que el text no solapi la punxa del brace
+		if(middleX > this.closingBraceMaxX){
+			this.closingBraceMaxX = middleX;
+		}
+
+
 	},
+
 
 	printAgregatedAmounts: function(mySVG)
 	{
@@ -761,7 +686,7 @@ var BS = {
 		this.printSVGText(mySVG, x, y + fontSize, val, fontSize);
 	
 		//Passiu = Actiu = numero
-		x = this.canvasSideExtraSize + fontSize;
+		x = FSCommon.canvasSideExtraSize + fontSize;
 		y = this.canvasHeight + fontSize;
 		val = accounting.formatMoney(
 						this.totalAssets.toString(),
@@ -786,4 +711,4 @@ var BS = {
 
 };
 
-BS.init();
+
