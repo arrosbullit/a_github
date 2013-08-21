@@ -24,7 +24,16 @@ var CRE = {
 	onclick_gastos: null,
 	printSectionsText: null,
 	getShortenedVersion: null,
-	dibuixaCR: null,
+	printTotalIncome: function()
+	{
+		var val = accounting.formatMoney(
+						this.ingressosTotals.toString(),
+						 "", 0, ".", ",");
+		var container = document.getElementById("CRTotalIncome");
+		var str = "Ingressos totals = " + val;
+		container.textContent = str;
+	},
+	dibuixaCR: null
 };
 
 CRE.doCRLine = function(line, val, resFlag, titFlag){
@@ -331,7 +340,7 @@ CRE.getShortenedVersion = function(inText)
 }
 
 
-CRE.dibuixaCR = function()
+CRE.dibuixaCR = function(totalAssets)
 {
 	console.log("dibuixaCR()");
 		
@@ -346,6 +355,19 @@ CRE.dibuixaCR = function()
 	this.canvasTopEmptySpace = 0;
 						
 	var colorIdx = 0;
+
+	//Reescala a petit si els assets són més grans
+	if(totalAssets){
+		if(totalAssets > this.ingressosTotals){
+			var aux = this.columnHeight * (this.ingressosTotals /
+				totalAssets);
+			this.canvasTopEmptySpace = this.columnHeight - aux;
+			this.columnHeight = aux;
+		}	
+	}
+
+
+
 	
 	//Crea un element svg
     var container = document.getElementById("CRSVGContainer");
@@ -353,7 +375,7 @@ CRE.dibuixaCR = function()
 	 "svg");
 	mySVG.setAttribute("version", "1.2");
 	mySVG.setAttribute("baseProfile", "tiny");
-	var aux = FSCommon.canvasWidth;
+	var aux = FSCommon.canvasWidth - 2 * FSCommon.canvasSideExtraSize;
 	mySVG.setAttribute("width", aux + "px");
 	aux = FSCommon.canvasHeight;
 	mySVG.setAttribute("height", aux + "px");
@@ -462,7 +484,8 @@ CRE.dibuixaCR = function()
 	this.doRect(mySVG, myX, lastY, this.columnWidth, 
 		sectionHeight, fill,
 		customData1, customData2, myCallback);
-		
+	
+	/*
 	//Draw closing curly brace
 	var startX = 2 * this.columnWidth + FSCommon.columnSeparationSize;
 	var startY =  FSCommon.canvasTopTextSpace + this.canvasTopEmptySpace;
@@ -482,7 +505,9 @@ CRE.dibuixaCR = function()
 			 fontSize);
 	BS.printSVGText(mySVG, startX, startY+ fontSize,
 				 val, fontSize);
+	*/
 	
+	this.printTotalIncome();
 }
 
 

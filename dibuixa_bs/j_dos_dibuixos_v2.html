@@ -16,7 +16,7 @@ function myInit2()
 	CRE.init();
 	
 	
-	CRE.dibuixaCR();
+	CRE.dibuixaCR(BS.totalAssets);
 	BS.dibuixa();
 	
 }
@@ -24,7 +24,7 @@ function myInit2()
 </head>
 <body onload = "myInit2()">
 <div id = "tot">
-	<div id = "titol">
+	<div id = "capcalera">
 		<div id = "nom_empresa" >
 		Nom Empresa
 		</div>	
@@ -34,13 +34,15 @@ function myInit2()
 	</div>
 
 	<div id = "BS">
-	<div id="BSSVGContainer"></div>
-	<div id="BSSectionInfo"></div>
+	<div id = "BSSVGContainer"></div>
+	<div id = "BSTotalAssets"></div>
+	<div id = "BSSectionInfo"></div>
 	</div>
 
 	<div id = "CR">
-	<div id="CRSVGContainer"></div>
-	<div id="CRSectionInfo"></div>
+	<div id = "CRSVGContainer"></div>
+	<div id = "CRTotalIncome"></div>
+	<div id = "CRSectionInfo"></div>
 	</div>
 </div>
 </body>

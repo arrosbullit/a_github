@@ -7,7 +7,7 @@ canvasTopEmptySpace: 0,
 var FSCommon = {
 	canvasHeight: 492,
 	canvasWidth: 352,
-	canvasBottomTextSpace: 20,
+	canvasBottomTextSpace: 0,
 	canvasTopTextSpace: 20,
 	canvasSideExtraSize: 70,
 	columnSeparationSize: 2,
@@ -17,9 +17,12 @@ var FSCommon = {
 //Functions
 	init: function(){
 		this.colorCodes.push("LightSeaGreen");
-		this.colorCodes.push("LightSkyBlue");
-		this.colorCodes.push("LightSlateGray");
-		this.colorCodes.push("LightSteelBlue");
+		this.colorCodes.push("PowderBlue");
+		/*
+		this.colorCodes.push("DarkTurquoise");
+		this.colorCodes.push("DodgerBlue");
+		this.colorCodes.push("LightBlue");
+		*/
 		
 		/*
 		this.colorCodes.push("#34D1B2");

@@ -364,6 +364,7 @@ var BS = {
 		this.passiuCorrentLastY = lastY;
 		this.drawAllBraces(mySVG);
 		this.printAgregatedAmounts(mySVG);
+		this.printTotalAssets();
 	
 	},
 	
@@ -685,6 +686,7 @@ var BS = {
 		this.printSVGText(mySVG, x, y, "PC", fontSize);
 		this.printSVGText(mySVG, x, y + fontSize, val, fontSize);
 	
+		/*
 		//Passiu = Actiu = numero
 		x = FSCommon.canvasSideExtraSize + fontSize;
 		y = this.canvasHeight + fontSize;
@@ -693,6 +695,7 @@ var BS = {
 						 "", 0, ".", ",");
 		var val2 = "Passiu = Actiu = " + val;
 		this.printSVGText(mySVG, x, y, val2, fontSize);
+		*/
 	},
 
 	printSVGText: function(mySVG, x, y, str, fontSize)
@@ -707,6 +710,16 @@ var BS = {
 		t.setAttribute("pointer-events", "none"); //click passthrough
 		t.textContent = str;
 		mySVG.appendChild(t);	
+	},
+	
+	printTotalAssets: function()
+	{
+		var val = accounting.formatMoney(
+						this.totalAssets.toString(),
+						 "", 0, ".", ",");
+		var container = document.getElementById("BSTotalAssets");
+		var str = "Actiu = Passiu = " + val;
+		container.textContent = str;
 	}
 
 };
