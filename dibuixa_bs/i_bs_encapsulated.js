@@ -103,7 +103,7 @@ var BS = {
 		this.passiuCorrent.push(this.BSLine("Instrumentos financieros derivados", 189));
 		this.passiuCorrent.push(this.BSLine("Otros pasivos financieros", 670));
 		this.passiuCorrent.push(this.BSLine("Provisiones para otros pasivos y gastos", 79));
-		this.passiuCorrent.push(this.BSLine("Otros pasivos corrientes", 7904));
+		this.passiuCorrent.push(this.BSLine("Otros pasiactiuNoCorrentLastYvos corrientes", 7904));
 		this.passiuCorrent.push(this.BSLine("Pasivos del Grupo enajenable clasificados como mantenidos para la venta", 0));
 		
 		
@@ -439,7 +439,7 @@ var BS = {
 		var val2 = accounting.formatMoney(val, "", 0, ".", ",");
 		percent = accounting.formatMoney(percent, "", 1, ".", ",");
 		console.log( val2 + " " + percent + "%");
-		displaySectionInfo(txt, val2, percent + "%");
+		this.displaySectionInfo(txt, val2, percent + "%");
 	},
 	
 	onclick_passiuNoCorrent: function(obj)
@@ -631,61 +631,148 @@ var BS = {
 
 
 	},
-
-
+	
+	/** Calc num of lines that fit in space, return num of lines and
+	first Y to have it centered */
+	calcNumLinesThatFitInSpace: function(wantedLines, sectionHeight, fontSize)
+	{
+		var numLines = sectionHeight / fontSize;
+		console.log("numLines " + numLines);
+		var firstY = 0;
+		numLines = Math.floor(numLines);
+		if(wantedLines < numLines){
+			var offset = ((wantedLines - 1) * fontSize) / 2;
+			firstY = sectionHeight / 2 - offset;
+		}else{
+			var offset = ((numLines - 1) * fontSize) / 2;
+			firstY = sectionHeight / 2 - offset;
+		}
+		return [numLines, firstY];
+	},
+	
 	printAgregatedAmounts: function(mySVG)
 	{
 		//Actiu no corrent
 		var x, y, value;
 		var fontSize = 15; 	
 		var fontMargin = 5;
+		var sectionHeight;
+		var res;
+		var val;
+		var val2;
+		var val3;
 		x = fontMargin;
-		y = (this.actiuNoCorrentLastY - this.actiuNoCorrentFirstY) / 2;
+		sectionHeight = this.actiuNoCorrentLastY - 
+						this.actiuNoCorrentFirstY;
+		
 		val = accounting.formatMoney(
 						this.totalActiuNoCorrent.toString(),
 						 "", 0, ".", ",");
-		this.printSVGText(mySVG, x, y, "ANC", fontSize);
-		this.printSVGText(mySVG, x, y + fontSize, val, fontSize);
+		val2 = 100 * this.totalActiuNoCorrent / this.totalAssets;
+		val3 =	Math.round(val2).toString() + "%";			 
+		res = this.calcNumLinesThatFitInSpace(3, sectionHeight, fontSize);
+
+		if(res[0] >= 1){
+			y = this.actiuNoCorrentFirstY + res[1];
+			this.printSVGText(mySVG, x, y, "ANC", fontSize);
+		}
+		if(res[0] >= 2){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val, fontSize);
+		}
+		if(res[0] >= 3){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val3, fontSize);
+		}
 	
 		//Actiu corrent
 		x = fontMargin;
-		y = this.actiuCorrentLastY - 
-			(this.actiuCorrentLastY - this.actiuCorrentFirstY) / 2;
+		sectionHeight = this.actiuCorrentLastY - this.actiuCorrentFirstY;
 		val = accounting.formatMoney(
 						this.totalActiuCorrent.toString(),
 						 "", 0, ".", ",");
-		this.printSVGText(mySVG, x, y, "AC", fontSize);
-		this.printSVGText(mySVG, x, y + fontSize, val, fontSize);
-					
+		val2 = 100 * this.totalActiuCorrent / this.totalAssets;
+		val3 =	Math.round(val2).toString() + "%";			 
+		res = this.calcNumLinesThatFitInSpace(3, sectionHeight, fontSize);
+
+		if(res[0] >= 1){
+			y = this.actiuCorrentFirstY + res[1];
+			this.printSVGText(mySVG, x, y, "AC", fontSize);
+		}
+		if(res[0] >= 2){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val, fontSize);
+		}			
+		if(res[0] >= 3){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val3, fontSize);
+		}
 		//Patrimoni Net
 		x = this.closingBraceMaxX + fontMargin;
-		y = (this.patrimoniNetLastY - this.patrimoniNetFirstY) / 2;
+		sectionHeight = this.patrimoniNetLastY - this.patrimoniNetFirstY;
 		val = accounting.formatMoney(
 						this.totalPatrimoniNet.toString(),
 						 "", 0, ".", ",");
-		this.printSVGText(mySVG, x, y, "PN", fontSize);
-		this.printSVGText(mySVG, x, y + fontSize, val, fontSize);
+		val2 = 100 * this.totalPatrimoniNet / this.totalAssets;
+		val3 =	Math.round(val2).toString() + "%";			 
+		res = this.calcNumLinesThatFitInSpace(3, sectionHeight, fontSize);
 
+		if(res[0] >= 1){
+			y = this.patrimoniNetFirstY + res[1];
+			this.printSVGText(mySVG, x, y, "PN", fontSize);
+		}
+		if(res[0] >= 2){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val, fontSize);
+		}
+		if(res[0] >= 3){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val3, fontSize);
+		}
 		//Passiu no corrent
 		x = this.closingBraceMaxX + fontMargin;
-		y = this.passiuNoCorrentFirstY + 
-			(this.passiuNoCorrentLastY - this.passiuNoCorrentFirstY) / 2;
+		sectionHeight = this.passiuNoCorrentLastY - this.passiuNoCorrentFirstY;
 		val = accounting.formatMoney(
 						this.totalPassiuNoCorrent.toString(),
 						 "", 0, ".", ",");
-		this.printSVGText(mySVG, x, y, "PNC", fontSize);
-		this.printSVGText(mySVG, x, y + fontSize, val, fontSize);
+		val2 = 100 * this.totalPassiuNoCorrent / this.totalAssets;
+		val3 =	Math.round(val2).toString() + "%";			 
+		res = this.calcNumLinesThatFitInSpace(3, sectionHeight, fontSize);
 
+		if(res[0] >= 1){
+			y = this.passiuNoCorrentFirstY + res[1];
+			this.printSVGText(mySVG, x, y, "PNC", fontSize);
+		}
+		if(res[0] >= 2){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val, fontSize);
+		}
+		if(res[0] >= 3){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val3, fontSize);
+		}
 		//Passiu corrent
 		x = this.closingBraceMaxX + fontMargin;
-		y = this.passiuCorrentFirstY + 
-			(this.passiuCorrentLastY - this.passiuCorrentFirstY) / 2;
+		sectionHeight = this.passiuCorrentLastY - this.passiuCorrentFirstY;
 		val = accounting.formatMoney(
 						this.totalPassiuCorrent.toString(),
 						 "", 0, ".", ",");
-		this.printSVGText(mySVG, x, y, "PC", fontSize);
-		this.printSVGText(mySVG, x, y + fontSize, val, fontSize);
-	
+		val2 = 100 * this.totalPassiuCorrent / this.totalAssets;
+		val3 =	Math.round(val2).toString() + "%";			 
+		res = this.calcNumLinesThatFitInSpace(3, sectionHeight, fontSize);
+
+		if(res[0] >= 1){
+			y = this.passiuCorrentFirstY + res[1];
+			this.printSVGText(mySVG, x, y, "PC", fontSize);
+		}
+		if(res[0] >= 2){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val, fontSize);
+		}	
+		if(res[0] >= 3){
+			y = y + fontSize;
+			this.printSVGText(mySVG, x, y, val3, fontSize);
+		}
 		/*
 		//Passiu = Actiu = numero
 		x = FSCommon.canvasSideExtraSize + fontSize;
@@ -718,8 +805,9 @@ var BS = {
 						this.totalAssets.toString(),
 						 "", 0, ".", ",");
 		var container = document.getElementById("BSTotalAssets");
-		var str = "Actiu = Passiu = " + val;
-		container.textContent = str;
+		var str = "<p>Actiu = Passiu = " + val + "</p>";
+		//container.textContent = str;
+		container.innerHTML = str;
 	}
 
 };

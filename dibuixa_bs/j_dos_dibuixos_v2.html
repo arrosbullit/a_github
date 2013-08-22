@@ -8,6 +8,7 @@
 <script src="l_FS_common.js"></script>
 <script src="i_bs_encapsulated.js"></script>
 <script src="g_cr_encapsulated.js"></script>
+<script src="l_ratios.js"></script>
 <script>
 function myInit2()
 {	
@@ -15,9 +16,9 @@ function myInit2()
 	BS.init();
 	CRE.init();
 	
-	
 	CRE.dibuixaCR(BS.totalAssets);
 	BS.dibuixa();
+	Ratios.dibuixa();
 	
 }
 </script>
@@ -34,15 +35,21 @@ function myInit2()
 	</div>
 
 	<div id = "BS">
-	<div id = "BSSVGContainer"></div>
-	<div id = "BSTotalAssets"></div>
-	<div id = "BSSectionInfo"></div>
+		<div id = "BSSVGContainer"></div>
+		<div id = "BSTotalAssets"></div>
+		<div id = "BSSectionInfo"></div>
 	</div>
 
 	<div id = "CR">
-	<div id = "CRSVGContainer"></div>
-	<div id = "CRTotalIncome"></div>
-	<div id = "CRSectionInfo"></div>
+		<div id = "CRSVGContainer"></div>
+		<div id = "CRTotalIncome"></div>
+		<div id = "CRSectionInfo"></div>
+	</div>
+	
+	<div id = "ratios">
+		<p> Se me ha roto un ratio de la bici.</p>
+		<p> Espérame un ratio que ahora vengo.</p>
+		
 	</div>
 </div>
 </body>

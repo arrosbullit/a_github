@@ -4,8 +4,14 @@
 }
 */
 
+p{
+	padding: 0px 0px 0px 0px;
+	margin: 0px 0px 0px 0px;
+	font-size: 14px;	
+}
+
 #tot{
-	border: 1px solid black;
+	/*border: 1px solid black;*/
 	/*background-color: grey;*/
 	width: 708px;
 	margin: auto;
@@ -13,14 +19,14 @@
 }
 
 #capcalera{
-	border: 1px dashed black;
+	/*border: 1px dashed black;*/
 	overflow:hidden;
 	/*background-color: pink;*/
 }
 
 #nom_empresa{
 	width: 50%;
-	border: 1px dashed blue;
+	/*border: 1px dashed blue;*/
 	/*background-color: yellow;*/
 	/*display: inline-block;*/
 	float: left;
@@ -28,27 +34,33 @@
 }
 
 #periode{
-	border: 1px dashed red;
+	/*border: 1px dashed red;*/
 	/*background-color: green;*/
 	/*display: inline-block;*/
 	float: left;
-	max-widht: 
 }
 
 #BS{
 	float: left;
-	border: 1px dashed red;
+	/*border: 1px dashed red;*/
 	max-width: 352px;
 }
 
 #CR{
 	float: left;
-	border: 1px dashed blue;
-	max-width: 353px;
+	/*border: 1px dashed blue;*/
+	max-width: 352px;
+}
+
+#ratios{
+	/*float: left;*/
+	/*border: 1px dashed red;*/
+	/*width: 100%;*/
+	margin-left: 568px;
 }
 
 #BSTotalAssets{
-	border: 1px dashed green;
+	/*border: 1px dashed green;*/
 	margin: auto;
 	text-align: center;
 	max-width: 353px;
@@ -56,7 +68,7 @@
 }
 
 #CRTotalIncome{
-	border: 1px dashed green;
+	/*border: 1px dashed green;*/
 	margin: auto;
 	text-align: center;
 	max-width: 353px;

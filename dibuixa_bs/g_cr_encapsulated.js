@@ -30,8 +30,10 @@ var CRE = {
 						this.ingressosTotals.toString(),
 						 "", 0, ".", ",");
 		var container = document.getElementById("CRTotalIncome");
-		var str = "Ingressos totals = " + val;
-		container.textContent = str;
+		var str = "<p>Ingressos totals = " + val + "</p>";
+		//container.textContent = str;
+		container.innerHTML = str;
+	
 	},
 	dibuixaCR: null
 };
@@ -77,6 +79,10 @@ CRE.init = function()
 {
 
 	this.fillCRLines();
+	//TMP: multiplica les lines per dos pq aixo es nomes un resultat semestral
+	for(var i = 0; i < this.CR.length; i++){
+		this.CR[i].value = this.CR[i].value * 2;
+	}
 	this.resultatFinal = this.calcResultatFinal();
 	this.beneficiNet = this.resultatFinal;
 	var aux = this.pickIngressosNormals();
