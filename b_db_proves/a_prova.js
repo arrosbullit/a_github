@@ -19,16 +19,18 @@ var sequelize = new Sequelize('database', 'username', 'password', {
 
 
 
-var sequelize = new Sequelize('mydb', 'postgres', '111111', {
+var sequelize = new Sequelize('mydb', 'robert', '111111', {
   host: "localhost",
   port: 5432,
   dialect: 'postgres'
 });
 
-sequelize.query("select * from weather").success(
+sequelize.query("select * from bs").success(
 	function(myTableRows){
-		console.log(myTableRows)
-	})
+		//console.log(myTableRows);
+		console.log("iii_deudores_comerciales " + 
+			myTableRows[0]['iii_deudores_comerciales']);
+	});
 
 
 
