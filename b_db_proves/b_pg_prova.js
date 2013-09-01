@@ -39,9 +39,22 @@ function pepito(done)
 	myClient.query('SELECT * FROM cr', function(err, result) {
 		console.log(result.rows);
 		console.log(err);
+		//done();
+		//pg.end();
+		listEmpreses(done);
+	});
+}
+
+
+function listEmpreses(done){
+	console.log("listEmpreses()");
+	myClient.query('select * from empresa', function(err, result){
+		console.log(result.rows);
+		console.log(err);
 		done();
 		pg.end();
 	});
+
 }
 
 console.log("Is this the end? My only friend the end");
