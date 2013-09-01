@@ -1,8 +1,17 @@
-/*
+
 * {
-   border: 1px solid red !important;
+   /*border: 1px solid red !important;*/
+   /*font-family: Georgia, serif;*/
+   /*font-family: "Helvetica Neue";*/
+   font-family: Georgia;
+   /*font-family: Arial;*/
+   /*font-family: Verdana;*/
+   /*font-family: "Arial new";*/
+   /*font-family: Optima;*/
+   /*font-family: ‘Lucida Sans Unicode’, ‘Lucida Grande’, sans-serif;*/
+   /*font-family: ‘Arial Narrow’, sans-serif;*/
 }
-*/
+
 
 p{
 	padding: 0px 0px 0px 0px;
