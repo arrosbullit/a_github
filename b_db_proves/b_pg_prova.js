@@ -4,6 +4,7 @@ var pg = require('pg');
 var connectionString = "postgres://robert:111111@localhost:5432/mydb";
 var myDone = false;
 
+//Per fer les crides sequencialment ho faig encadenant ls callbacks
 
 //Aqui utilitzto pg.connect enlloc de client.connect per a fer
 //pg object
@@ -18,13 +19,29 @@ var myDone = false;
 //	 ocupar molta memòria. El paràmetre result té:
 //	array rows
 
+//Per executar funcions de forma sequencial utilitzo aquesta paranoia
+function series(callbacks, last) {
+  function next() {
+    var callback = callbacks.shift();
+    if(callback) {
+      callback(lastResult, function() {
+        next();
+      });
+    } else {
+      last();
+    }
+  }
+  next();
+}
+
+
 
 pg.connect(connectionString, function(err, client, done) {
 	myClient = client;
 	client.query('SELECT * FROM bs', function(err, result) {
 		
-		console.log(result.rows);
-		pepito(done);
+		//console.log(result.rows);
+		queryCR(done);
 		//done();
 		
 	});
@@ -33,12 +50,12 @@ pg.connect(connectionString, function(err, client, done) {
 
 //var myClient;
 
-function pepito(done)
+function queryCR(done)
 {
 	console.log("Soc Pepito");
 	myClient.query('SELECT * FROM cr', function(err, result) {
-		console.log(result.rows);
-		console.log(err);
+		//console.log(result.rows);
+		//console.log(err);
 		//done();
 		//pg.end();
 		listEmpreses(done);
@@ -50,11 +67,34 @@ function listEmpreses(done){
 	console.log("listEmpreses()");
 	myClient.query('select * from empresa', function(err, result){
 		console.log(result.rows);
-		console.log(err);
-		done();
-		pg.end();
+		//console.log(err);
+		//done();
+		//pg.end();
+		existeixEmpresa(done);
 	});
 
+}
+
+
+//funcio per comprovar si existeix una empresa
+function existeixEmpresa(done){
+	console.log("existeixEmpresa()");
+	myClient.query('SELECT * FROM empresa WHERE UPPER(name) LIKE UPPER(\'%cola%\')', 
+		function(err, result){
+			if(err){
+				console.log("Empresa no trobada");	
+			}
+			if(result){
+				if(result.rows.length == 0){
+					console.log("Empresa no trobada");
+				}
+				else{
+					console.log(result.rows);
+				}
+			}
+			done();
+			pg.end();
+	});
 }
 
 console.log("Is this the end? My only friend the end");
