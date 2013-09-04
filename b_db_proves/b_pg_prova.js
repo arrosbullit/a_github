@@ -19,23 +19,6 @@ var myDone = false;
 //	 ocupar molta memòria. El paràmetre result té:
 //	array rows
 
-//Per executar funcions de forma sequencial utilitzo aquesta paranoia
-function series(callbacks, last) {
-  function next() {
-    var callback = callbacks.shift();
-    if(callback) {
-      callback(lastResult, function() {
-        next();
-      });
-    } else {
-      last();
-    }
-  }
-  next();
-}
-
-
-
 pg.connect(connectionString, function(err, client, done) {
 	myClient = client;
 	client.query('SELECT * FROM bs', function(err, result) {
@@ -79,7 +62,8 @@ function listEmpreses(done){
 //funcio per comprovar si existeix una empresa
 function existeixEmpresa(done){
 	console.log("existeixEmpresa()");
-	myClient.query('SELECT * FROM empresa WHERE UPPER(name) LIKE UPPER(\'%cola%\')', 
+	myClient.query('SELECT * FROM empresa WHERE UPPER(name) \
+						LIKE UPPER(\'%cola%\')', 
 		function(err, result){
 			if(err){
 				console.log("Empresa no trobada");	
@@ -89,6 +73,8 @@ function existeixEmpresa(done){
 					console.log("Empresa no trobada");
 				}
 				else{
+					//TODO
+					//myClient.query()
 					console.log(result.rows);
 				}
 			}
