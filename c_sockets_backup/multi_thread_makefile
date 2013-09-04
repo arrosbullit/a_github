@@ -1,0 +1,11 @@
+
+TARGET = exe_multi_thread_http_server
+
+$(TARGET): ref_multi_thread_server.cpp
+	g++ -lpthread ref_multi_thread_server.cpp -o $(TARGET)
+
+clean:
+	rm $(TARGET)
+
+
+

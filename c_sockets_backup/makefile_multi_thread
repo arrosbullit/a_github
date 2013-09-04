@@ -1,0 +1,15 @@
+
+#Generate an http_server_to serve TS files and M3U8 files
+
+multi_thread_http_server: multi_thread_http_server.o m3u8_lock.o 
+	g++	 -o $@ -lpthread multi_thread_http_server.o m3u8_lock.o
+	
+	
+multi_thread_http_server.o: multi_thread_http_server.cpp
+	g++ multi_thread_http_server.cpp -c -DROBERT_UNIT_TEST -o multi_thread_http_server.o
+	
+m3u8_lock.o: m3u8_lock.c m3u8_lock.h
+	g++ m3u8_lock.c -c -o m3u8_lock.o
+	
+
+
